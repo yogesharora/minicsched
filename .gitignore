@@ -4,3 +4,5 @@
 cmdline.c
 s3.y.h
 s3.y.output
+s3.lex.c
+s3.y.c

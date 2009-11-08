@@ -5,8 +5,8 @@
 #include "cmdline.h"
 
 extern int num_errors;
-extern int yyerror();
-extern int yywrap();
+extern int yyerror(...);
+extern "C" int yywrap();
 extern int yyparse();
 extern int cmdlex();
 
@@ -54,7 +54,7 @@ void c_optimize()
 
   find_function(); /* remove extra instructions needed for simulation */
 
-  /************************************************************************/  
+  /************************************************************************/
   /************************************************************************/
   /************************************************************************/
   /************************************************************************/
@@ -67,8 +67,8 @@ void c_optimize()
   /************************************************************************/
   /************************************************************************/
 
-  print_list(fptr,instList);   /* dump code to output file */  
-  
+  print_list(fptr,instList);   /* dump code to output file */
+
   codegen_exit(fptr);
   fclose(fptr); /* close file */
 }
@@ -113,16 +113,16 @@ void find_function()
 		  oldhead = instList;
 		  instList = instList->next;
 		  free(oldhead);
-		}	      
+		}
 	    }
 	}
     }
-  
+
   if(!found)
     {
       printf("Warning: Beginning of input not in the expected format!\n");
     }
-  
+
   /* Remove last instruction: END */
   tmp = instList;
   tmp1 = tmp;
@@ -152,8 +152,8 @@ void print_cc(FILE *fptr, int ccode)
   if( ccode & CC_Z )
     fprintf(fptr,"z");
   if( ccode & CC_P )
-    fprintf(fptr,"p"); 
-  
+    fprintf(fptr,"p");
+
   fprintf(fptr," ");
 }
 
@@ -164,7 +164,7 @@ void print_op(FILE *fptr, struct operand op)
   case op_reg:
     fprintf(fptr,"R%d",op.reg);
     break;
-  case op_imm:  
+  case op_imm:
     fprintf(fptr,"#%d",op.imm);
     break;
   case op_label:
@@ -203,7 +203,7 @@ void print_inst(FILE* fptr, inst_t i)
   case OP_SUB:
     print_op(fptr, i->ops[0]); fprintf(fptr,", ");
     print_op(fptr, i->ops[1]); fprintf(fptr,", ");
-    print_op(fptr, i->ops[2]); 
+    print_op(fptr, i->ops[2]);
     break;
     /* 2 operands */
   case OP_BR:
@@ -216,7 +216,7 @@ void print_inst(FILE* fptr, inst_t i)
   case OP_NOT:
   case OP_NOTL:
     print_op(fptr, i->ops[0]); fprintf(fptr,", ");
-    print_op(fptr, i->ops[1]); 
+    print_op(fptr, i->ops[1]);
     break;
 
     /* one operand */
@@ -224,7 +224,7 @@ void print_inst(FILE* fptr, inst_t i)
   case OP_BRA:
   case OP_JMP:
   case OP_JSR:
-    print_op(fptr, i->ops[0]); 
+    print_op(fptr, i->ops[0]);
 
   default:
     break;

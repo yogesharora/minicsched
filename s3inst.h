@@ -1,7 +1,6 @@
 #ifndef S3INST_H
 #define S3INST_H
 
-typedef enum opcode_t opcode_t;
 enum opcode_t {
     /* no opcode seen (yet) */
     OP_NONE,
@@ -14,7 +13,7 @@ enum opcode_t {
     OP_GETC, OP_HALT, OP_IN, OP_OUT, OP_PUTS, OP_PUTSP, OP_END, OP_ORIG,
 
     /* non-trap pseudo-ops */
-    OP_RET, 
+    OP_RET,
 
     NUM_OPS
 };
@@ -22,7 +21,7 @@ enum opcode_t {
 static const char* const opnames[NUM_OPS] = {
     /* no opcode seen (yet) */
     "missing opcode",
-  
+
     /* real instruction opcodes */
     "ADD", "AND", "ANDL", "BR", "BRA", "DIV", "JMP", "JSR", "JSRR", "LD", "LDI", "LDR", "LEA",
     "MUL", "NOP","NOT", "NOTL", "OR", "ORL", "RTI", "SET", "ST", "STI", "STR", "SUB","TRAP",
@@ -34,7 +33,6 @@ static const char* const opnames[NUM_OPS] = {
     "RET",
 };
 
-typedef enum ccode_t ccode_t;
 enum ccode_t {
     CC_    = 0,
     CC_P   = 0x0200,
