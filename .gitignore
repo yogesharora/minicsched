@@ -1,3 +1,6 @@
 *.o
 .svn
 *.exe
+cmdline.c
+s3.y.h
+s3.y.output
