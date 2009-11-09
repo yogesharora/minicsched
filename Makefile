@@ -2,7 +2,7 @@
 .PHONY: all tests
 .SECONDARY:
 
-OBJS :=  s3.lex.o s3.y.o minicsched.o
+OBJS :=  s3.lex.o s3.y.o minicsched.o DDG.o
 
 all: sched
 
