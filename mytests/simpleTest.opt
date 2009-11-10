@@ -1,5 +1,6 @@
 	LD R2, X
 	LD R3, Y
+	LD R4, Y
 	ADD R1, R2, #1
 	MUL R2, R3, R3
 	MUL R5, R1, R3

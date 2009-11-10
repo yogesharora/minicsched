@@ -13,7 +13,6 @@ DDG::DDG(inst_t start, inst_t end) :
 			LOWEST_REGISTER)
 {
 	initProgramInfo();
-	graph = new DDGNodeList(noOfInstructions);
 	defInst = new DDGNode*[noOfRegisters];
 	useInst = new DDGNodeSet[noOfRegisters];
 
@@ -27,14 +26,13 @@ DDG::DDG(inst_t start, inst_t end) :
 
 DDG::~DDG()
 {
-	delete graph;
 	delete []defInst;
 	delete []useInst;
 }
 
 void DDG::createDDG()
 {
-	for (DDGNodeListIter iter = graph->begin(); iter != graph->end(); iter++)
+	for (DDGNodeListIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
 		DDGNode *node = *iter;
 		int nodeDestReg = node->getDestReg();
@@ -49,13 +47,16 @@ void DDG::createDDG()
 			{
 				defInst[srcReg]->addFlowDependency(node);
 			}
+			// TODO add self dependency code her
 		}
 
+		// output dependency
 		if(nodeDestReg!=INVALID_REG && defInst[nodeDestReg]!=NULL)
 		{
 			defInst[nodeDestReg]->addOutputDependency(node);
 		}
 
+		// anti dependency
 		if(nodeDestReg!=INVALID_REG)
 		{
 			DDGNodeSet &nodeUseInst =  useInst[nodeDestReg];
@@ -92,7 +93,7 @@ void DDG::initProgramInfo()
 		if (maxRegister > highestRegister)
 			highestRegister = maxRegister;
 
-		graph->push_back(new DDGNode(cur, ctr));
+		graph.push_back(new DDGNode(cur, ctr));
 		cur = cur->next;
 		ctr++;
 	}
@@ -103,7 +104,7 @@ void DDG::initProgramInfo()
 
 int DDG::getMaxUsedRegister(inst_t instruction)
 {
-	int high;
+	int high = LOWEST_REGISTER;
 	for (int i = 0; i < 3; i++)
 	{
 		if (instruction->ops[i].t == op_reg)

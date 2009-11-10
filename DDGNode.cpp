@@ -9,8 +9,8 @@
 #include "s3inst.h"
 
 DDGNode::DDGNode(inst_t instruction, int no) :
-	instruction(instruction), instructionNumber(no), rootNode(true),
-	destReg(INVALID_REG), latency(getLatency())
+	instruction(instruction), instructionNumber(no), destReg(INVALID_REG),
+	rootNode(true), latency(getLatency())
 {
 	initRegisterInfo();
 }
@@ -90,7 +90,8 @@ void DDGNode::initRegisterInfo()
 			break;
 		case OP_STR :
 			srcReg.insert(instruction->ops[0].reg);
-			srcReg.insert(instruction->ops[1].reg);
+			if (instruction->ops[1].t == op_reg)
+				srcReg.insert(instruction->ops[1].reg);
 			if (instruction->ops[2].t == op_reg)
 				srcReg.insert(instruction->ops[2].reg);
 			break;

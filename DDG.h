@@ -30,7 +30,7 @@ private:
 	int noOfInstructions;
 	int noOfRegisters;
 	Register highestRegister;
-	DDGNodeList* graph;
+	DDGNodeList graph;
 	DDGNode** defInst;
 	DDGNodeSet* useInst;
 
