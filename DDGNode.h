@@ -20,6 +20,7 @@ class DDGNode
 
 	void initRegisterInfo();
 
+	DDGNode(DDGNode &);
 public:
 	DDGNode(inst_t instruction);
 	virtual ~DDGNode();

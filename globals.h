@@ -10,5 +10,6 @@
 
 #include <stddef.h>
 #define REGS_MINSIZE -1
-#define R0 0
+#define LOWEST_REGISTER 0
+#define R0 0;
 #endif /* GLOBALS_H_ */
