@@ -9,8 +9,8 @@
 #include "globals.h"
 
 DDG::DDG(inst_t start, inst_t end) :
-	startInstruction(start), endInstruction(end), highestRegister(REGS_MINSIZE),
-	lowestRegister(REGS_MINSIZE)
+	startInstruction(start), endInstruction(end),
+			highestRegister(REGS_MINSIZE), lowestRegister(REGS_MINSIZE)
 {
 	initProgramInfo();
 }
@@ -25,7 +25,7 @@ void DDG::initProgramInfo()
 	int ctr = 0;
 	int maxRegister = REGS_MINSIZE;
 
-	while (cur!=NULL && cur!=endInstruction )
+	while (cur != NULL && cur != endInstruction)
 	{
 		initRegisterInfo(cur, highestRegister, lowestRegister);
 		cur = cur->next;
@@ -36,8 +36,7 @@ void DDG::initProgramInfo()
 	noOfRegisters = maxRegister + 1;
 }
 
-void DDG::initRegisterInfo(inst_t instruction, int& high,
-		int &low)
+void DDG::initRegisterInfo(inst_t instruction, int& high, int &low)
 {
 	for (int i = 0; i < 3; i++)
 	{
