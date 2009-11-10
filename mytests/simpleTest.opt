@@ -1,0 +1,8 @@
+	LD R2, X
+	LD R3, Y
+	ADD R1, R2, #1
+	MUL R2, R3, R3
+	MUL R5, R1, R3
+	Add R5, R5, #1
+	ST R5, X
+	ADD R6, R2, R4
