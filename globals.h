@@ -9,7 +9,7 @@
 #define GLOBALS_H_
 
 #include <stddef.h>
-#define REGS_MINSIZE -1
+#define INVALID_REG -1
 #define LOWEST_REGISTER 0
 #define R0 0;
 

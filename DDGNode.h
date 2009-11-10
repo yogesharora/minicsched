@@ -13,8 +13,6 @@
 #include "globals.h"
 #include "s3inst.h"
 
-
-
 class DDGNode
 {
 public:

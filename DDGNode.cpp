@@ -10,7 +10,7 @@
 
 DDGNode::DDGNode(inst_t instruction, int no) :
 	instruction(instruction), instructionNumber(no), rootNode(true),
-	latency(getLatency())
+	destReg(INVALID_REG), latency(getLatency())
 {
 	initRegisterInfo();
 }
