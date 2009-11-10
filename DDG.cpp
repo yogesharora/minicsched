@@ -12,10 +12,26 @@ DDG::DDG(inst_t start, inst_t end) :
 	startInstruction(start), endInstruction(end), highestRegister(LOWEST_REGISTER)
 {
 	initProgramInfo();
+	createDDG();
 }
 
 DDG::~DDG()
 {
+}
+
+void DDG::createDDG()
+{
+	for(DDGNodeListIter iter=graph.begin(); iter<graph.begin(); iter++)
+	{
+		DDGNode &node = *(*iter);
+
+		// true dependency check
+		DDGNode::RegisterSet srcReg = node.getSrcRegisters();
+		for (DDGNode::RegisterSetIter iter = srcReg.begin(); iter != srcReg.end(); iter++)
+		{
+
+		}
+	}
 }
 
 void DDG::initProgramInfo()
@@ -29,7 +45,7 @@ void DDG::initProgramInfo()
 		if(maxRegister>highestRegister)
 			highestRegister = maxRegister;
 
-		graph.push_back(new DDGNode(cur));
+		graph.push_back(new DDGNode(cur, ctr));
 		cur = cur->next;
 		ctr++;
 	}

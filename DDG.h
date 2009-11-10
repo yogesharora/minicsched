@@ -14,20 +14,26 @@
 
 class DDG
 {
+public:
+	typedef std::vector<DDGNode*> DDGNodeList;
+	typedef DDGNodeList::iterator  DDGNodeListIter;
+
+	DDG(inst_t start, inst_t end);
+	virtual ~DDG();
+
+private:
 	inst_t startInstruction;
 	inst_t endInstruction;
 	int noOfInstructions;
 	int noOfRegisters;
-	int highestRegister;
-	std::vector<DDGNode*> graph;
+	Register highestRegister;
+	DDGNodeList graph;
 
 	void initProgramInfo();
 	int getMaxUsedRegister(inst_t instruction);
+	void createDDG();
 
 	DDG(DDG&);
-public:
-	DDG(inst_t start, inst_t end);
-	virtual ~DDG();
 };
 
 #endif /* DDG_H_ */

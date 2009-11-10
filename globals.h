@@ -12,4 +12,7 @@
 #define REGS_MINSIZE -1
 #define LOWEST_REGISTER 0
 #define R0 0;
+
+typedef int Register;
+
 #endif /* GLOBALS_H_ */
