@@ -8,29 +8,27 @@
 #include "DDG.h"
 #include "globals.h"
 
-DDG::DDG(inst_t inst):
-	instructions(inst)
+DDG::DDG(inst_t start, inst_t end) :
+	startInstruction(start), endInstruction(end), highestRegister(REGS_MINSIZE),
+	lowestRegister(REGS_MINSIZE)
 {
 	initProgramInfo();
 }
 
 DDG::~DDG()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void DDG::initProgramInfo()
 {
-	inst_t head = instructions;
+	inst_t cur = startInstruction;
 	int ctr = 0;
 	int maxRegister = REGS_MINSIZE;
 
-	while (head)
+	while (cur!=NULL && cur!=endInstruction )
 	{
-		int reg = getHighestReg(head);
-		if (reg > maxRegister)
-			maxRegister = reg;
-
+		initRegisterInfo(cur, highestRegister, lowestRegister);
+		cur = cur->next;
 		ctr++;
 	}
 
@@ -38,16 +36,17 @@ void DDG::initProgramInfo()
 	noOfRegisters = maxRegister + 1;
 }
 
-int DDG::getHighestReg(inst_t instruction)
+void DDG::initRegisterInfo(inst_t instruction, int& high,
+		int &low)
 {
-	int highestReg = 0;
 	for (int i = 0; i < 3; i++)
 	{
 		if (instruction->ops[i].t == op_reg)
 		{
-			if (instruction->ops[i].reg > highestReg)
-				highestReg = instruction->ops[i].reg;
+			if (instruction->ops[i].reg > high)
+				high = instruction->ops[i].reg;
+			else if (instruction->ops[i].reg > high)
+				low = instruction->ops[i].reg;
 		}
 	}
-	return highestReg;
 }

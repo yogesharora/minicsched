@@ -12,15 +12,18 @@
 
 class DDG
 {
-	inst_t instructions;
+	inst_t startInstruction;
+	inst_t endInstruction;
 	int noOfInstructions;
 	int noOfRegisters;
+	int highestRegister;
+	int lowestRegister;
 
 	void initProgramInfo();
-	int getHighestReg(inst_t instruction);
+	inline void initRegisterInfo(inst_t instruction, int& high, int &low);
 
 public:
-	DDG(inst_t inst);
+	DDG(inst_t start, inst_t end);
 	virtual ~DDG();
 };
 
