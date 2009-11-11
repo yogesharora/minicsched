@@ -9,6 +9,7 @@
 #define DDGNODE_H_
 
 #include <set>
+#include <list>
 #include <utility>
 #include "globals.h"
 #include "s3inst.h"
@@ -19,8 +20,8 @@ public:
 	typedef std::set<Register> RegisterSet;
 	typedef RegisterSet::iterator RegisterSetIter;
 	typedef std::pair<DDGNode*, int> DependentEdge;
-	// TODO do we need to ignore duplicates here
-	typedef std::set<DependentEdge> DependentSet;
+	typedef std::list<DependentEdge> DependentList;
+	typedef DependentList::iterator DependentListIter;
 
 	DDGNode(inst_t instruction, int no);
 	virtual ~DDGNode();
@@ -40,12 +41,14 @@ private:
 	int destReg;
 	bool rootNode;
 	RegisterSet srcReg;
-	DependentSet dependentSet;
+	DependentList dependents;
 	int latency;
 
 	DDGNode(DDGNode &);
 	void initRegisterInfo();
 	int getLatency();
+	void insertEdge(DDGNode* dependent, int edgeWeight);
+	void printEdges();
 };
 
 #endif /* DDGNODE_H_ */

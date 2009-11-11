@@ -1,0 +1,5 @@
+LOOP:	Add R2, R2, #1
+	LDR R3, R2, #0
+	STR R0, R3, #0
+	ADD R10, R10, #1
+	BRp R10, LOOP

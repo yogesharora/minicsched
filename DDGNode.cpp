@@ -120,15 +120,49 @@ void DDGNode::initRegisterInfo()
 
 void DDGNode::addFlowDependency(DDGNode *dependent)
 {
-	dependentSet.insert(DependentEdge(dependent, latency));
+	insertEdge(dependent, latency);
+	printEdges();
 }
 
 void DDGNode::addAntiDependency(DDGNode *dependent)
 {
-	dependentSet.insert(DependentEdge(dependent, 0));
+	insertEdge(dependent, 0);
+	printEdges();
 }
 
 void DDGNode::addOutputDependency(DDGNode *dependent)
 {
-	dependentSet.insert(DependentEdge(dependent, 1));
+	insertEdge(dependent, 1);
+	printEdges();
+}
+
+void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight)
+{
+	for(DependentListIter iter = dependents.begin(); iter!=dependents.end();iter++)
+	{
+		DependentEdge &edge = *iter;
+		if (edge.first->getNo() == dependent->getNo())
+		{
+			// edge to same node exits
+			// if the weight is more...add that edge else no need
+			if(edge.second < edgeWeight)
+			{
+				edge.second=edgeWeight;
+			}
+			return;
+		}
+	}
+	dependents.push_back(DependentEdge(dependent, edgeWeight));
+
+}
+
+void DDGNode::printEdges()
+{
+//	printf("Node No: %d ", instructionNumber);
+//	for(DependentListIter iter = dependents.begin(); iter!=dependents.end();iter++)
+//	{
+//		DependentEdge &edge = *iter;
+//		printf("(%d, %d) ",edge.first->getNo(), edge.second);
+//	}
+//	printf("\n");
 }

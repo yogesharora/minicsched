@@ -22,6 +22,7 @@ public:
 	typedef DDGNodeSet::iterator DDGNodeSetIter;
 
 	DDG(inst_t start, inst_t end);
+	int getMaxCycleLength();
 	virtual ~DDG();
 
 private:
@@ -29,6 +30,7 @@ private:
 	inst_t endInstruction;
 	int noOfInstructions;
 	int noOfRegisters;
+	int maxCycleLength;
 	Register highestRegister;
 	DDGNodeList graph;
 	DDGNode** defInst;
