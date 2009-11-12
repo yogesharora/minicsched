@@ -17,6 +17,10 @@ BasicBlockFinder::BasicBlockFinder(inst_t startInst) :
 
 BasicBlockFinder::~BasicBlockFinder()
 {
+	for (BasicBlockIter iter = basicBlocks.begin(); iter != basicBlocks.end(); iter++)
+	{
+		delete *iter;
+	}
 }
 
 void BasicBlockFinder::findBasicBlocks()
