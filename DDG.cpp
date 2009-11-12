@@ -31,6 +31,11 @@ DDG::~DDG()
 {
 	delete[] defInst;
 	delete[] useInst;
+	// delete all the DDGNodes
+	for (DDGNodeListIter iter = graph.begin(); iter != graph.end(); iter++)
+	{
+			delete *iter;
+	}
 }
 
 void DDG::createDDG()
@@ -152,7 +157,6 @@ int DDG::getMaxCycleLength(DDGNode* graphRoot)
 	while (!queue.empty())
 	{
 		DDGNode* queuedNode = queue.front();
-		int queuedNodeInstructionNo = queuedNode->getNo();
 		queue.pop();
 
 		// queued node is now being visited
