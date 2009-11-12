@@ -102,8 +102,7 @@ void DDGNode::initRegisterInfo()
 			destReg = instruction->ops[0].reg;
 			break ;
 		case OP_OUT :
-			// TODO
-			srcReg.insert(0);
+			srcReg.insert(R0);
 			break;
 		case OP_IN :
 			destReg = R0;

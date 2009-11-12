@@ -10,8 +10,7 @@
 
 #include <stddef.h>
 #define INVALID_REG -1
-#define LOWEST_REGISTER 0
-#define R0 0;
+#define R0 0
 
 typedef int Register;
 

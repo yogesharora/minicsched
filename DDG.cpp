@@ -13,7 +13,7 @@ using namespace std;
 
 DDG::DDG(inst_t start, inst_t end) :
 	startInstruction(start), endInstruction(end), maxCycleLength(-1),
-			highestRegister(LOWEST_REGISTER)
+	maxReg(INVALID_REG), minReg(INVALID_REG)
 {
 	initProgramInfo();
 	defInst = new DDGNode*[noOfRegisters];
@@ -45,30 +45,31 @@ void DDG::createDDG()
 		for (DDGNodeListIter iter = graph.begin(); iter != graph.end(); iter++)
 		{
 			DDGNode *node = *iter;
-			int nodeDestReg = node->getDestReg();
-
+			Register nodeDestReg = node->getDestReg();
+			int nodeDestRegIndex = nodeDestReg - minReg;
 			// true dependency check
-			DDGNode::RegisterSet srcRegistes = node->getSrcRegisters();
-			for (DDGNode::RegisterSetIter iter = srcRegistes.begin(); iter
-					!= srcRegistes.end(); iter++)
+			DDGNode::RegisterSet srcRegisters = node->getSrcRegisters();
+			for (DDGNode::RegisterSetIter iter = srcRegisters.begin(); iter
+					!= srcRegisters.end(); iter++)
 			{
 				Register srcReg = *iter;
-				if (defInst[srcReg] != NULL)
+				int srcRegIndex = srcReg - minReg;
+				if (defInst[srcRegIndex] != NULL)
 				{
-					defInst[srcReg]->addFlowDependency(node);
+					defInst[srcRegIndex]->addFlowDependency(node);
 				}
 			}
 
 			// output dependency
-			if (nodeDestReg != INVALID_REG && defInst[nodeDestReg] != NULL)
+			if (nodeDestReg != INVALID_REG && defInst[nodeDestRegIndex] != NULL)
 			{
-				defInst[nodeDestReg]->addOutputDependency(node);
+				defInst[nodeDestRegIndex]->addOutputDependency(node);
 			}
 
 			// anti dependency
 			if (nodeDestReg != INVALID_REG)
 			{
-				DDGNodeSet &nodeUseInst = useInst[nodeDestReg];
+				DDGNodeSet &nodeUseInst = useInst[nodeDestRegIndex];
 				for (DDGNodeSetIter iter = nodeUseInst.begin(); iter
 						!= nodeUseInst.end(); iter++)
 				{
@@ -76,17 +77,18 @@ void DDG::createDDG()
 				}
 			}
 
-			for (DDGNode::RegisterSetIter iter = srcRegistes.begin(); iter
-					!= srcRegistes.end(); iter++)
+			for (DDGNode::RegisterSetIter iter = srcRegisters.begin(); iter
+					!= srcRegisters.end(); iter++)
 			{
 				Register srcReg = *iter;
-				useInst[srcReg].insert(node);
+				int srcRegIndex = srcReg - minReg;
+				useInst[srcRegIndex].insert(node);
 			}
 
 			if (nodeDestReg != INVALID_REG)
 			{
-				useInst[nodeDestReg].clear();
-				defInst[nodeDestReg] = node;
+				useInst[nodeDestRegIndex].clear();
+				defInst[nodeDestRegIndex] = node;
 			}
 		}
 	}
@@ -99,9 +101,7 @@ void DDG::initProgramInfo()
 
 	while (cur != NULL && cur != endInstruction)
 	{
-		int maxRegister = getMaxUsedRegister(cur);
-		if (maxRegister > highestRegister)
-			highestRegister = maxRegister;
+		calcMaxMinRegisters(cur);
 
 		graph.push_back(new DDGNode(cur, ctr));
 		cur = cur->next;
@@ -109,21 +109,30 @@ void DDG::initProgramInfo()
 	}
 
 	noOfInstructions = ctr;
-	noOfRegisters = highestRegister + 1;
+	noOfRegisters = (maxReg-minReg) + 1;
 }
 
-int DDG::getMaxUsedRegister(inst_t instruction)
+void DDG::calcMaxMinRegisters(inst_t instruction)
 {
-	int high = LOWEST_REGISTER;
+	if(instruction->op==OP_IN || instruction->op==OP_OUT)
+	{
+		minReg = R0;
+		if(R0 > maxReg)
+			maxReg = R0;
+	}
 	for (int i = 0; i < 3; i++)
 	{
 		if (instruction->ops[i].t == op_reg)
 		{
-			if (instruction->ops[i].reg > high)
-				high = instruction->ops[i].reg;
+			if(minReg==INVALID_REG)
+				minReg = instruction->ops[i].reg;
+
+			if (instruction->ops[i].reg > maxReg)
+				maxReg = instruction->ops[i].reg;
+			else if(instruction->ops[i].reg < minReg)
+				minReg = instruction->ops[i].reg;
 		}
 	}
-	return high;
 }
 
 int DDG::getMaxCycleLength()

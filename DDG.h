@@ -45,13 +45,14 @@ private:
 	int noOfInstructions;
 	int noOfRegisters;
 	int maxCycleLength;
-	Register highestRegister;
+	Register maxReg;
+	Register minReg;
 	DDGNodeList graph;
 	DDGNode** defInst;
 	DDGNodeSet* useInst;
 
 	void initProgramInfo();
-	int getMaxUsedRegister(inst_t instruction);
+	void calcMaxMinRegisters(inst_t instruction);
 	void createDDG();
 	int getMaxCycleLength(DDGNode* node);
 
