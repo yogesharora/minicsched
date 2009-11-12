@@ -3,7 +3,8 @@
 #include <string.h>
 #include "s3inst.h"
 #include "cmdline.h"
-#include "DDG.h"
+#include "BasicBlockFinder.h"
+#include "BasicBlock.h"
 
 extern int num_errors;
 extern int yyerror(...);
@@ -61,8 +62,10 @@ void c_optimize()
 	/************************************************************************/
 	/************************************************************************/
 	/*    Call your implementation from here                                */
-	DDG ddg(instList, NULL);
-	ddg.getMaxCycleLength();
+	BasicBlockFinder finder(instList);
+	finder.findBasicBlocks();
+	const BasicBlockFinder::BasicBlockList& basicBlockList = finder.getBasicBlocks();
+
 
 	/* Find single basic block loops and perform Iterative Modulo Scheduling */
 

@@ -23,6 +23,7 @@ public:
 
 	DDG(inst_t start, inst_t end);
 	int getMaxCycleLength();
+	int getNoInstructions() { return noOfInstructions;}
 	virtual ~DDG();
 
 private:

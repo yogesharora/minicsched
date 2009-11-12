@@ -7,13 +7,21 @@
 
 #include "BasicBlock.h"
 
-BasicBlock::BasicBlock(inst_t start, inst_t end)
+BasicBlock::BasicBlock(inst_t start, inst_t end) :
+	ddg(start, end)
 {
-
 
 }
 
 BasicBlock::~BasicBlock()
 {
 
+}
+
+void BasicBlock::calculateMII(int k)
+{
+	recMII = ddg.getNoInstructions();
+	resMII = ddg.getMaxCycleLength();
+
+	mII = recMII > resMII ? recMII : resMII;
 }

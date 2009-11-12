@@ -30,8 +30,15 @@ void BasicBlockFinder::findBasicBlocks()
 		{
 			// look for the last instruction in stack
 			inst_t lastLabelInstruction = lastLabelStack.top();
+			char* curLabel;
+
+			if(cur->op==OP_BR)
+				curLabel = cur->ops[1].label;
+			if(cur->op==OP_BRA)
+				curLabel = cur->ops[0].label;
+
 			if (lastLabelInstruction->label != NULL && strcmp(
-					lastLabelInstruction->label, cur->label) == 0)
+					lastLabelInstruction->label, curLabel) == 0)
 			{
 				// found a basic block
 				basicBlocks.push_back(new BasicBlock(lastLabelInstruction, cur));
