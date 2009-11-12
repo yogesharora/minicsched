@@ -62,6 +62,7 @@ void c_optimize()
 	/************************************************************************/
 	/*    Call your implementation from here                                */
 	DDG ddg(instList, NULL);
+	ddg.getMaxCycleLength();
 
 	/* Find single basic block loops and perform Iterative Modulo Scheduling */
 

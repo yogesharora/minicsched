@@ -158,11 +158,11 @@ void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight)
 
 void DDGNode::printEdges()
 {
-//	printf("Node No: %d ", instructionNumber);
-//	for(DependentListIter iter = dependents.begin(); iter!=dependents.end();iter++)
-//	{
-//		DependentEdge &edge = *iter;
-//		printf("(%d, %d) ",edge.first->getNo(), edge.second);
-//	}
-//	printf("\n");
+	printf("Node No: %d ", instructionNumber);
+	for(DependentListIter iter = dependents.begin(); iter!=dependents.end();iter++)
+	{
+		DependentEdge &edge = *iter;
+		printf("(%d, %d) ",edge.first->getNo(), edge.second);
+	}
+	printf("\n");
 }

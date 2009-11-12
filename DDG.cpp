@@ -185,12 +185,6 @@ int DDG::getMaxCycleLength(DDGNode* graphRoot)
 				// add it to queue
 				queue.push(dependentNode);
 			}
-			else if (dependentNodeInstructionNo == queuedNodeInstructionNo)
-			{
-				// self loop
-				if (edgeLength > maxCycleLength)
-						maxCycleLength = edgeLength;
-			}
 		}
 	}
 
