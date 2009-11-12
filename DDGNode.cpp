@@ -131,7 +131,9 @@ void DDGNode::addAntiDependency(DDGNode *dependent)
 
 void DDGNode::addOutputDependency(DDGNode *dependent)
 {
-	insertEdge(dependent, 1);
+	int weight =  latency - dependent->latency + 1;
+	weight = weight > 0 ? weight : 0;
+	insertEdge(dependent, weight);
 	printEdges();
 }
 
