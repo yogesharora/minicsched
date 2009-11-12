@@ -22,6 +22,7 @@ public:
 	typedef std::pair<DDGNode*, int> DependentEdge;
 	typedef std::list<DependentEdge> DependentList;
 	typedef DependentList::iterator DependentListIter;
+	typedef DependentList::const_iterator DependentListConstIter;
 
 	DDGNode(inst_t instruction, int no);
 	virtual ~DDGNode();
@@ -29,6 +30,7 @@ public:
 	Register getDestReg() { return destReg;}
 	DDGNode::RegisterSet& getSrcRegisters() { return srcReg;}
 	int getNo() { return instructionNumber; }
+	const DependentList& getDependents() { return dependents; }
 
 	void addFlowDependency(DDGNode *dependent);
 	void addAntiDependency(DDGNode *dependent);

@@ -26,6 +26,19 @@ public:
 	virtual ~DDG();
 
 private:
+
+	struct TraversalInfo
+	{
+		bool visited;
+		int length;
+
+		TraversalInfo()
+		{
+			visited = false;
+			length = 0;
+		}
+	};
+
 	inst_t startInstruction;
 	inst_t endInstruction;
 	int noOfInstructions;
@@ -39,6 +52,7 @@ private:
 	void initProgramInfo();
 	int getMaxUsedRegister(inst_t instruction);
 	void createDDG();
+	int getMaxCycleLength(DDGNode* node);
 
 	DDG(DDG&);
 };

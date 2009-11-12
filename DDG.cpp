@@ -7,10 +7,13 @@
 
 #include "DDG.h"
 #include "globals.h"
+#include <queue>
+
+using namespace std;
 
 DDG::DDG(inst_t start, inst_t end) :
-	startInstruction(start), endInstruction(end), maxCycleLength(0),
-	highestRegister(LOWEST_REGISTER)
+	startInstruction(start), endInstruction(end), maxCycleLength(-1),
+			highestRegister(LOWEST_REGISTER)
 {
 	initProgramInfo();
 	defInst = new DDGNode*[noOfRegisters];
@@ -18,7 +21,7 @@ DDG::DDG(inst_t start, inst_t end) :
 
 	for (int i = 0; i < noOfRegisters; i++)
 	{
-		defInst[i]=NULL;
+		defInst[i] = NULL;
 	}
 
 	createDDG();
@@ -26,8 +29,8 @@ DDG::DDG(inst_t start, inst_t end) :
 
 DDG::~DDG()
 {
-	delete []defInst;
-	delete []useInst;
+	delete[] defInst;
+	delete[] useInst;
 }
 
 void DDG::createDDG()
@@ -120,5 +123,77 @@ int DDG::getMaxUsedRegister(inst_t instruction)
 
 int DDG::getMaxCycleLength()
 {
+	if (maxCycleLength != -1)
+		return maxCycleLength;
 
+	// else calculate new length
+	// for each node find maximum cycle length which ends at it
+	for (DDGNodeListIter iter = graph.begin(); iter != graph.end(); iter++)
+	{
+		int maxCycleForNode = getMaxCycleLength(*iter);
+		if (maxCycleForNode > maxCycleLength)
+			maxCycleLength = maxCycleForNode;
+	}
+
+	return maxCycleLength;
+}
+
+int DDG::getMaxCycleLength(DDGNode* graphRoot)
+{
+	typedef queue<DDGNode*> CycleQueue;
+	CycleQueue queue;
+
+	TraversalInfo *traversalInfo = new TraversalInfo[noOfInstructions];
+	int graphRootInstructionNo = graphRoot->getNo();
+	int maxCycleLength = -1;
+	// put first element in queue
+	// its visited will always be false
+	queue.push(graphRoot);
+	while (!queue.empty())
+	{
+		DDGNode* queuedNode = queue.front();
+		int queuedNodeInstructionNo = queuedNode->getNo();
+		queue.pop();
+
+		// queued node is now being visited
+		TraversalInfo &queuedNodeInfo = traversalInfo[queuedNode->getNo()];
+		queuedNodeInfo.visited=true;
+
+		// visit all dependents of this queue element
+		const DDGNode::DependentList& dependents = queuedNode->getDependents();
+		for (DDGNode::DependentListConstIter iter = dependents.begin(); iter
+				!= dependents.end(); iter++)
+		{
+			const DDGNode::DependentEdge dependentEdge = *iter;
+			DDGNode* dependentNode = dependentEdge.first;
+			int edgeLength = dependentEdge.second;
+			int dependentNodeInstructionNo = dependentNode->getNo();
+
+			TraversalInfo &dependentNodeInfo = traversalInfo[dependentNodeInstructionNo];
+
+			// if that dependent is equal to graph root node
+			if (dependentNodeInstructionNo == graphRootInstructionNo)
+			{
+				// we have found a cycle with graph root node as header
+				int lengthFromGraphRoot = dependentNodeInfo.length + edgeLength;
+				if (lengthFromGraphRoot > maxCycleLength)
+					maxCycleLength = lengthFromGraphRoot;
+			}
+			else if (!dependentNodeInfo.visited)
+			{
+				dependentNodeInfo.length = queuedNodeInfo.length + edgeLength;
+				// add it to queue
+				queue.push(dependentNode);
+			}
+			else if (dependentNodeInstructionNo == queuedNodeInstructionNo)
+			{
+				// self loop
+				if (edgeLength > maxCycleLength)
+						maxCycleLength = edgeLength;
+			}
+		}
+	}
+
+	delete[] traversalInfo;
+	return maxCycleLength;
 }
