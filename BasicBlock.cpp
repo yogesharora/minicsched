@@ -23,5 +23,6 @@ void BasicBlock::calculateMII(int k)
 	recMII = ddg.getNoInstructions();
 	resMII = ddg.getMaxCycleLength();
 
+	printf("recMII %d\n", recMII);
 	mII = recMII > resMII ? recMII : resMII;
 }
