@@ -31,14 +31,42 @@ private:
 	struct TraversalInfo
 	{
 		bool visited;
-		int length;
+		int pathLength;
 
 		TraversalInfo()
 		{
 			visited = false;
-			length = 0;
+			pathLength = 0;
 		}
 	};
+
+	struct TraversalInfoArray
+	{
+		TraversalInfo *traversalInfo;
+		int length;
+
+		TraversalInfoArray(int arrayLength) : traversalInfo(NULL), length(arrayLength)
+		{
+			traversalInfo = new TraversalInfo[arrayLength];
+		}
+
+		TraversalInfoArray(TraversalInfoArray& source)
+		{
+			traversalInfo = new TraversalInfo[source.length];
+			length = source.length;
+
+			for (int i = 0; i < length; ++i)
+			{
+				traversalInfo[i] = source.traversalInfo[i];
+			}
+		}
+
+		~TraversalInfoArray()
+		{
+			delete []traversalInfo;
+		}
+	};
+
 
 	inst_t startInstruction;
 	inst_t endInstruction;
@@ -54,7 +82,7 @@ private:
 	void initProgramInfo();
 	void calcMaxMinRegisters(inst_t instruction);
 	void createDDG();
-	int getMaxCycleLength(DDGNode* node);
+	void checkCycles(DDGNode* graphRoot, DDGNode* node, TraversalInfoArray infoArray);
 
 	DDG(DDG&);
 };

@@ -7,7 +7,6 @@
 
 #include "DDG.h"
 #include "globals.h"
-#include <queue>
 
 using namespace std;
 
@@ -99,13 +98,17 @@ void DDG::initProgramInfo()
 	inst_t cur = startInstruction;
 	int ctr = 0;
 
-	while (cur != NULL && cur != endInstruction)
+	while (cur != NULL)
 	{
 		calcMaxMinRegisters(cur);
 
 		graph.push_back(new DDGNode(cur, ctr));
-		cur = cur->next;
 		ctr++;
+
+		if(cur==endInstruction)
+			break;
+
+		cur = cur->next;
 	}
 
 	noOfInstructions = ctr;
@@ -144,63 +147,52 @@ int DDG::getMaxCycleLength()
 	// for each node find maximum cycle length which ends at it
 	for (DDGNodeListIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		int maxCycleForNode = getMaxCycleLength(*iter);
-		if (maxCycleForNode > maxCycleLength)
-			maxCycleLength = maxCycleForNode;
+		TraversalInfoArray infoArray(noOfInstructions);
+		DDGNode *root = *iter;
+		checkCycles(root, root, infoArray);
 	}
 
 	return maxCycleLength;
 }
 
-int DDG::getMaxCycleLength(DDGNode* graphRoot)
+void DDG::checkCycles(DDGNode* graphRoot, DDGNode* curNode, TraversalInfoArray infoArray)
 {
-	typedef queue<DDGNode*> CycleQueue;
-	CycleQueue queue;
-
-	TraversalInfo *traversalInfo = new TraversalInfo[noOfInstructions];
+	const DDGNode::DependentList& dependents = curNode->getDependents();
 	int graphRootInstructionNo = graphRoot->getNo();
-	int maxCycleLength = -1;
-	// put first element in queue
-	// its visited will always be false
-	queue.push(graphRoot);
-	while (!queue.empty())
+	int curNodeInstructionNo = curNode->getNo();
+	TraversalInfo &curNodeInfo = infoArray.traversalInfo[curNodeInstructionNo];
+	curNodeInfo.visited = true;
+
+	for (DDGNode::DependentListConstIter iter = dependents.begin(); iter
+			!= dependents.end(); iter++)
 	{
-		DDGNode* queuedNode = queue.front();
-		queue.pop();
+		const DDGNode::DependentEdge dependentEdge = *iter;
+		DDGNode* dependentNode = dependentEdge.first;
+		int edgeLength = dependentEdge.second;
+		int dependentNodeInstructionNo = dependentNode->getNo();
+		TraversalInfo &dependentInfo = infoArray.traversalInfo[dependentNodeInstructionNo];
 
-		// queued node is now being visited
-		TraversalInfo &queuedNodeInfo = traversalInfo[queuedNode->getNo()];
-		queuedNodeInfo.visited=true;
+		int lengthFromGraphRoot = curNodeInfo.pathLength + edgeLength;
 
-		// visit all dependents of this queue element
-		const DDGNode::DependentList& dependents = queuedNode->getDependents();
-		for (DDGNode::DependentListConstIter iter = dependents.begin(); iter
-				!= dependents.end(); iter++)
+		if(dependentNodeInstructionNo == graphRootInstructionNo)
 		{
-			const DDGNode::DependentEdge dependentEdge = *iter;
-			DDGNode* dependentNode = dependentEdge.first;
-			int edgeLength = dependentEdge.second;
-			int dependentNodeInstructionNo = dependentNode->getNo();
-
-			TraversalInfo &dependentNodeInfo = traversalInfo[dependentNodeInstructionNo];
-
-			// if that dependent is equal to graph root node
-			if (dependentNodeInstructionNo == graphRootInstructionNo)
+			if (lengthFromGraphRoot > maxCycleLength)
 			{
-				// we have found a cycle with graph root node as header
-				int lengthFromGraphRoot = dependentNodeInfo.length + edgeLength;
-				if (lengthFromGraphRoot > maxCycleLength)
-					maxCycleLength = lengthFromGraphRoot;
-			}
-			else if (!dependentNodeInfo.visited)
-			{
-				dependentNodeInfo.length = queuedNodeInfo.length + edgeLength;
-				// add it to queue
-				queue.push(dependentNode);
+				maxCycleLength = lengthFromGraphRoot;
 			}
 		}
-	}
+		else if(dependentNodeInstructionNo == curNodeInstructionNo)
+		{
+			if (edgeLength > maxCycleLength)
+			{
+				maxCycleLength = edgeLength;
+			}
+		}
+		else if (dependentInfo.visited == false)
+		{
+			dependentInfo.pathLength = lengthFromGraphRoot;
+			checkCycles(graphRoot, dependentNode, infoArray);
+		}
 
-	delete[] traversalInfo;
-	return maxCycleLength;
+	}
 }
