@@ -16,7 +16,7 @@ tests :=  \
 	graded_008.opt \
 
 %.opt: %.asm
-	$(MCC) $(CFLAGS) $< > $@
+	$(MCC) $(CFLAGS) -o $@ $<
 
 all: clean $(tests)
 
