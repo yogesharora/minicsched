@@ -55,14 +55,14 @@ void DDG::createDDG()
 				int srcRegIndex = srcReg - minReg;
 				if (defInst[srcRegIndex] != NULL)
 				{
-					defInst[srcRegIndex]->addFlowDependency(node);
+					defInst[srcRegIndex]->addFlowDependency(node, i);
 				}
 			}
 
 			// output dependency
 			if (nodeDestReg != INVALID_REG && defInst[nodeDestRegIndex] != NULL)
 			{
-				defInst[nodeDestRegIndex]->addOutputDependency(node);
+				defInst[nodeDestRegIndex]->addOutputDependency(node, i);
 			}
 
 			// anti dependency
@@ -72,7 +72,7 @@ void DDG::createDDG()
 				for (DDGNodeSetIter iter = nodeUseInst.begin(); iter
 						!= nodeUseInst.end(); iter++)
 				{
-					(*iter)->addAntiDependency(node);
+					(*iter)->addAntiDependency(node, i);
 				}
 			}
 
@@ -167,8 +167,8 @@ void DDG::checkCycles(DDGNode* graphRoot, DDGNode* curNode, TraversalInfoArray i
 			!= dependents.end(); iter++)
 	{
 		const DDGNode::DependentEdge dependentEdge = *iter;
-		DDGNode* dependentNode = dependentEdge.first;
-		int edgeLength = dependentEdge.second;
+		DDGNode* dependentNode = dependentEdge.dependent;
+		int edgeLength = dependentEdge.edgeWeight;
 		int dependentNodeInstructionNo = dependentNode->getNo();
 		TraversalInfo &dependentInfo = infoArray.traversalInfo[dependentNodeInstructionNo];
 

@@ -19,7 +19,21 @@ class DDGNode
 public:
 	typedef std::set<Register> RegisterSet;
 	typedef RegisterSet::iterator RegisterSetIter;
-	typedef std::pair<DDGNode*, int> DependentEdge;
+
+	struct DependentEdge
+	{
+		DDGNode* dependent;
+		int edgeWeight;
+		int iterationNo;
+
+		DependentEdge(DDGNode* d, int e, int i)
+		{
+			dependent = d;
+			edgeWeight = e;
+			iterationNo = i;
+		}
+	};
+
 	typedef std::list<DependentEdge> DependentList;
 	typedef DependentList::iterator DependentListIter;
 	typedef DependentList::const_iterator DependentListConstIter;
@@ -32,9 +46,9 @@ public:
 	int getNo() { return instructionNumber; }
 	const DependentList& getDependents() { return dependents; }
 
-	void addFlowDependency(DDGNode *dependent);
-	void addAntiDependency(DDGNode *dependent);
-	void addOutputDependency(DDGNode *dependent);
+	void addFlowDependency(DDGNode *dependent, int iteration );
+	void addAntiDependency(DDGNode *dependent, int iteration);
+	void addOutputDependency(DDGNode *dependent, int iteration);
 
 
 private:
@@ -49,7 +63,7 @@ private:
 	DDGNode(DDGNode &);
 	void initRegisterInfo();
 	int getLatency();
-	void insertEdge(DDGNode* dependent, int edgeWeight);
+	void insertEdge(DDGNode* dependent, int edgeWeight, int iteration);
 	void printEdges();
 };
 
