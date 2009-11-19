@@ -86,7 +86,8 @@ void ModuloSchedulor::print()
 
 bool ModuloSchedulor::iterativeSchedule()
 {
-	while (!queue.empty())
+	int budget = 3 * noOfInstructions;
+	while (!queue.empty() && budget > 0)
 	{
 		DDGNode* op = queue.top();
 		queue.pop();
@@ -98,6 +99,8 @@ bool ModuloSchedulor::iterativeSchedule()
 		int timeSlot = findTimeSlot(op, minTime, maxTime);
 
 		schedule(op, timeSlot);
+
+		budget--;
 	}
 
 	if (queue.empty())

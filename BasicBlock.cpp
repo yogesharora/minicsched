@@ -28,7 +28,6 @@ void BasicBlock::scheduleBlock(int k)
 	int delta = mII;
 
 	int done = false;
-	// TODO add budget here
 	while (!done)
 	{
 		ModuloSchedulor *scheduler = new ModuloSchedulor(delta, k,

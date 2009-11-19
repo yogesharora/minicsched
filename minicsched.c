@@ -67,7 +67,7 @@ void c_optimize()
 	const BasicBlockFinder::BasicBlockList& basicBlockList = finder.getBasicBlocks();
 	for(BasicBlockFinder::BasicBlockConstIter iter=basicBlockList.begin(); iter!=basicBlockList.end();iter++)
 	{
-		(*iter)->scheduleBlock(3);
+		(*iter)->scheduleBlock(4);
 		(*iter)->print();
 	}
 
