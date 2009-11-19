@@ -34,7 +34,7 @@ class ModuloSchedulor
 	{
 		bool operator () (DDGNode* a, DDGNode* b)
 		{
-			return a->getNo() < b->getNo();
+			return a->getNo() > b->getNo();
 		}
 	};
 

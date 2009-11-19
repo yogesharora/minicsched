@@ -109,7 +109,7 @@ int ModuloSchedulor::findTimeSlot(DDGNode *op, int minTime, int maxTime)
 	int schedSlot = INVALID_SCHEDULE_TIME;
 	while (schedSlot == INVALID_SCHEDULE_TIME && curTime <= maxTime)
 	{
-		if (resourceConflict(curTime))
+		if (!resourceConflict(curTime))
 			curTime++;
 		else
 			schedSlot = curTime;
@@ -158,6 +158,10 @@ int ModuloSchedulor::calculateEarlyStart(DDGNode *op)
 			tmin = tmin > tnew ? tmin : tnew;
 		}
 	}
+
+	if(tmin==INVALID_SCHEDULE_TIME)
+		tmin = 0;
+
 	return tmin;
 }
 
