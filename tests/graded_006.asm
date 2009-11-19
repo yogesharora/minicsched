@@ -22,7 +22,8 @@
 	   	L4:	ADD		R52   , R50   , #3
 			STR		R53   , R51	  , #5
 			ADD     R53   , R52   , #6
-			BRp		R50	  , L3
+			SET     R50   , #2
+			BRnz	R50	  , L3
 			IN
 			ADD     R56   , R0    , #0
 		L2: ADD     R50   , R56   , #1
