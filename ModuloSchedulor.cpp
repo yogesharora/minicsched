@@ -21,7 +21,12 @@ ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d) :
 	for (DDG::DDGNodeListConstIter iter = instructions.begin(); iter
 			!= instructions.end(); iter++)
 	{
-		queue.push(*iter);
+		DDGNode *ddgNode= *iter;
+		if(iter == instructions.begin())
+		{
+			loopLabel = ddgNode->getInstruction()->label;
+		}
+		queue.push(ddgNode);
 	}
 
 }
@@ -30,6 +35,37 @@ ModuloSchedulor::~ModuloSchedulor()
 {
 	delete[] neverScheduled;
 	delete[] schedTime;
+}
+
+void ModuloSchedulor::rotate()
+{
+	// branch instruction is last instruction
+	// see where is it in schedule
+	int branchSchedTime = schedTime[noOfInstructions-1] % delta;
+	// find the maximum
+	int max = 0;
+	for(int i=0;i<noOfInstructions;i++)
+	{
+		max = schedTime[i] % delta > max ?  schedTime[i] % delta : max;
+	}
+
+	if (branchSchedTime < max)
+	{
+		// TODO take care of labels
+		// TODO take care of iteration numbers
+		for (int j = 0; j < max-branchSchedTime; j++)
+		{
+			Cycle lastCycle = mrt[0];
+			Cycle tempCycle;
+			for (int i = 1; i <= max; i++)
+			{
+				Cycle tempCycle = mrt[i];
+				mrt[i] = lastCycle;
+				lastCycle = tempCycle;
+			}
+			mrt[0] = lastCycle;
+		}
+	}
 }
 
 void ModuloSchedulor::print()
@@ -45,6 +81,7 @@ void ModuloSchedulor::print()
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
 
 bool ModuloSchedulor::iterativeSchedule()

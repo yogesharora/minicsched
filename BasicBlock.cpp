@@ -28,6 +28,7 @@ void BasicBlock::scheduleBlock(int k)
 	int delta = mII;
 
 	int done = false;
+	// TODO add budget here
 	while (!done)
 	{
 		ModuloSchedulor *scheduler = new ModuloSchedulor(delta, k,
@@ -43,6 +44,7 @@ void BasicBlock::scheduleBlock(int k)
 		}
 		delta++;
 	}
+	finalSchedule->rotate();
 }
 
 void BasicBlock::calculateMII(int k)
@@ -51,7 +53,6 @@ void BasicBlock::calculateMII(int k)
 	resMII = noInstructions / k;
 	recMII = ddg.getMaxCycleLength();
 
-	printf("recMII %d\n", recMII);
 	mII = recMII > resMII ? recMII : resMII;
 }
 
@@ -63,6 +64,9 @@ void BasicBlock::print()
 		PrintUtils::printInstruction(stdout, head);
 		head = head->next;
 	}
+
+	if(head!=NULL)
+		PrintUtils::printInstruction(stdout, head);
 
 	fprintf(stdout, "RecMII %d, ResMII %d, MII, %d\n", recMII, resMII, mII);
 

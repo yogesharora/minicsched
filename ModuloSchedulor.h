@@ -21,6 +21,7 @@ class ModuloSchedulor
 	int delta;
 	unsigned int k;
 	int noOfInstructions;
+	char* loopLabel;
 
 	struct DDGNodeSchedule
 	{
@@ -63,6 +64,7 @@ class ModuloSchedulor
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d);
 	bool iterativeSchedule();
+	void rotate();
 	void print();
 	~ModuloSchedulor();
 };
