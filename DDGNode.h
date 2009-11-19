@@ -24,13 +24,15 @@ public:
 	{
 		DDGNode* dependent;
 		int edgeWeight;
-		int iterationNo;
+		int myIteration;
+		int dependentIteration;
 
-		DependentEdge(DDGNode* d, int e, int i)
+		DependentEdge(DDGNode* d, int e, int mi, int di)
 		{
 			dependent = d;
 			edgeWeight = e;
-			iterationNo = i;
+			myIteration = mi;
+			dependentIteration = di;
 		}
 	};
 
@@ -46,9 +48,9 @@ public:
 	int getNo() { return instructionNumber; }
 	const DependentList& getDependents() { return dependents; }
 
-	void addFlowDependency(DDGNode *dependent, int iteration );
-	void addAntiDependency(DDGNode *dependent, int iteration);
-	void addOutputDependency(DDGNode *dependent, int iteration);
+	void addFlowDependency(DDGNode *dependent, int myIteration, int dependentIteration);
+	void addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration);
+	void addOutputDependency(DDGNode *dependent, int myIteration, int dependentIteration);
 
 
 private:
@@ -63,7 +65,7 @@ private:
 	DDGNode(DDGNode &);
 	void initRegisterInfo();
 	int getLatency();
-	void insertEdge(DDGNode* dependent, int edgeWeight, int iteration);
+	void insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, int dependentIteration);
 	void printEdges();
 };
 

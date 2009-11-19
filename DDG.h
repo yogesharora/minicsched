@@ -9,7 +9,6 @@
 #define DDG_H_
 
 #include <vector>
-#include <set>
 #include "s3inst.h"
 #include "DDGNode.h"
 
@@ -18,8 +17,7 @@ class DDG
 public:
 	typedef std::vector<DDGNode*> DDGNodeList;
 	typedef DDGNodeList::iterator  DDGNodeListIter;
-	typedef std::set<DDGNode*> DDGNodeSet;
-	typedef DDGNodeSet::iterator DDGNodeSetIter;
+
 
 	DDG(inst_t start, inst_t end);
 	int getMaxCycleLength();
@@ -27,6 +25,41 @@ public:
 	virtual ~DDG();
 
 private:
+
+	struct DDGNodeWithIteration
+	{
+		DDGNode* ddgNode;
+		int iterationNo;
+
+		DDGNodeWithIteration()
+		{
+			ddgNode = NULL;
+			iterationNo = 0;
+		}
+
+		DDGNodeWithIteration(const DDGNodeWithIteration &node)
+		{
+			ddgNode = node.ddgNode;
+			iterationNo = node.iterationNo;
+		}
+
+		DDGNodeWithIteration(DDGNode* d, int i)
+		{
+			ddgNode = d;
+			iterationNo = i;
+		}
+
+		bool operator!=(int* value)
+		{
+			if (value==NULL && ddgNode != NULL)
+				return true;
+			else
+				return false;
+		}
+	};
+
+	typedef std::vector<DDGNodeWithIteration> DDGNodeSet;
+	typedef DDGNodeSet::iterator DDGNodeSetIter;
 
 	struct TraversalInfo
 	{
@@ -76,7 +109,7 @@ private:
 	Register maxReg;
 	Register minReg;
 	DDGNodeList graph;
-	DDGNode** defInst;
+	DDGNodeWithIteration* defInst;
 	DDGNodeSet* useInst;
 
 	void initProgramInfo();

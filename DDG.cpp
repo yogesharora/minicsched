@@ -15,13 +15,8 @@ DDG::DDG(inst_t start, inst_t end) :
 	maxReg(INVALID_REG), minReg(INVALID_REG)
 {
 	initProgramInfo();
-	defInst = new DDGNode*[noOfRegisters];
+	defInst = new DDGNodeWithIteration[noOfRegisters];
 	useInst = new DDGNodeSet[noOfRegisters];
-
-	for (int i = 0; i < noOfRegisters; i++)
-	{
-		defInst[i] = NULL;
-	}
 
 	createDDG();
 }
@@ -55,14 +50,16 @@ void DDG::createDDG()
 				int srcRegIndex = srcReg - minReg;
 				if (defInst[srcRegIndex] != NULL)
 				{
-					defInst[srcRegIndex]->addFlowDependency(node, i);
+					defInst[srcRegIndex].ddgNode->addFlowDependency(node,
+							defInst[srcRegIndex].iterationNo, i);
 				}
 			}
 
 			// output dependency
 			if (nodeDestReg != INVALID_REG && defInst[nodeDestRegIndex] != NULL)
 			{
-				defInst[nodeDestRegIndex]->addOutputDependency(node, i);
+				defInst[nodeDestRegIndex].ddgNode->addOutputDependency(node,
+						defInst[nodeDestRegIndex].iterationNo, i);
 			}
 
 			// anti dependency
@@ -72,7 +69,8 @@ void DDG::createDDG()
 				for (DDGNodeSetIter iter = nodeUseInst.begin(); iter
 						!= nodeUseInst.end(); iter++)
 				{
-					(*iter)->addAntiDependency(node, i);
+					(*iter).ddgNode->addAntiDependency(node,
+							(*iter).iterationNo, i);
 				}
 			}
 
@@ -81,13 +79,13 @@ void DDG::createDDG()
 			{
 				Register srcReg = *iter;
 				int srcRegIndex = srcReg - minReg;
-				useInst[srcRegIndex].insert(node);
+				useInst[srcRegIndex].push_back(DDGNodeWithIteration(node, i));
 			}
 
 			if (nodeDestReg != INVALID_REG)
 			{
 				useInst[nodeDestRegIndex].clear();
-				defInst[nodeDestRegIndex] = node;
+				defInst[nodeDestRegIndex] = DDGNodeWithIteration(node, i);
 			}
 		}
 	}
