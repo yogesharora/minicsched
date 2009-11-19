@@ -39,7 +39,7 @@ void ModuloSchedulor::print()
 		Cycle &cycle = mrt[i];
 		for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
-			DDGNode* ddgNode = *iter;
+			DDGNode* ddgNode = iter->ddgNode;
 			PrintUtils::printInstruction(stdout, ddgNode->getInstruction(), true);
 			printf(".");
 		}
@@ -92,12 +92,12 @@ void ModuloSchedulor::schedule(DDGNode* op, int timeSlot)
 		Cycle &cycle = mrt[moduloTimeSlot];
 		for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
-			queue.push(*iter);
+			queue.push(iter->ddgNode);
 		}
 		cycle.clear();
 	}
 
-	mrt[moduloTimeSlot].push_back(op);
+	mrt[moduloTimeSlot].push_back(DDGNodeSchedule(op, timeSlot/delta));
 	schedTime[op->getNo()] = timeSlot;
 	neverScheduled[op->getNo()] = false;
 }
@@ -110,10 +110,10 @@ void ModuloSchedulor::unschedule(int instruction)
 
 	for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 	{
-		if ((*iter)->getNo() == instruction)
+		if (iter->ddgNode->getNo() == instruction)
 		{
 			cycle.erase(iter);
-			queue.push(*iter);
+			queue.push(iter->ddgNode);
 			break;
 		}
 	}

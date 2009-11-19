@@ -22,7 +22,17 @@ class ModuloSchedulor
 	unsigned int k;
 	int noOfInstructions;
 
-	typedef std::list<DDGNode *> Cycle;
+	struct DDGNodeSchedule
+	{
+		DDGNode *ddgNode;
+		int iteration;
+
+		DDGNodeSchedule(DDGNode *d, int i) : ddgNode(d), iteration(i)
+		{
+
+		}
+	};
+	typedef std::list<DDGNodeSchedule> Cycle;
 	typedef Cycle::iterator CycleIter;
 	typedef std::vector<Cycle> Mrt;
 
