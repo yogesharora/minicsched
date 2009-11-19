@@ -6,19 +6,20 @@
  */
 
 #include "BasicBlock.h"
+#include "PrintUtils.h"
 #include <queue>
 
 using namespace std;
 
-BasicBlock::BasicBlock(inst_t start, inst_t end) :
-	ddg(start, end)
+BasicBlock::BasicBlock(inst_t s, inst_t e) :
+	start(s), end(e), ddg(start, end), finalSchedule(NULL)
 {
 
 }
 
 BasicBlock::~BasicBlock()
 {
-
+	delete finalSchedule;
 }
 
 void BasicBlock::scheduleBlock(int k)
@@ -32,6 +33,14 @@ void BasicBlock::scheduleBlock(int k)
 		ModuloSchedulor *scheduler = new ModuloSchedulor(delta, k,
 				noInstructions, ddg);
 		done = scheduler->iterativeSchedule();
+		if (done)
+		{
+			finalSchedule = scheduler;
+		}
+		else
+		{
+			delete finalSchedule;
+		}
 		delta++;
 	}
 }
@@ -46,4 +55,16 @@ void BasicBlock::calculateMII(int k)
 	mII = recMII > resMII ? recMII : resMII;
 }
 
+void BasicBlock::print()
+{
+	inst_t head = start;
+	while (head!=NULL && head!=end)
+	{
+		PrintUtils::printInstruction(stdout, head);
+		head = head->next;
+	}
 
+	fprintf(stdout, "RecMII %d, ResMII %d, MII, %d\n", recMII, resMII, mII);
+
+	finalSchedule->print();
+}

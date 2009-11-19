@@ -19,20 +19,23 @@
 class BasicBlock
 {
 private:
-
+	inst_t start;
+	inst_t end;
 	int resMII;
 	int recMII;
 	int mII;
 	DDG ddg;
 	int noInstructions;
-	ModuloSchedulor *schedule;
+	ModuloSchedulor *finalSchedule;
 
 	void calculateMII(int k);
+
 
 public:
 
 	BasicBlock(inst_t start, inst_t end);
 	~BasicBlock();
+	void print();
 
 	void scheduleBlock(int k);
 };

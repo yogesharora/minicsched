@@ -56,6 +56,8 @@ public:
 
 	const PredecessorList& getPredecessors() { return predecessors; };
 
+	inst_t getInstruction() { return instruction;}
+
 	void addFlowDependency(DDGNode *dependent, int myIteration, int dependentIteration);
 
 	void addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration);

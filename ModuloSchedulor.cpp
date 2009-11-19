@@ -6,6 +6,7 @@
  */
 
 #include "ModuloSchedulor.h"
+#include "PrintUtils.h"
 
 ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d) :
 	delta(del), k(res), noOfInstructions(inst), mrt(del), ddg(d)
@@ -29,6 +30,21 @@ ModuloSchedulor::~ModuloSchedulor()
 {
 	delete[] neverScheduled;
 	delete[] schedTime;
+}
+
+void ModuloSchedulor::print()
+{
+	for(int i=0;i<delta;i++)
+	{
+		Cycle &cycle = mrt[i];
+		for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
+		{
+			DDGNode* ddgNode = *iter;
+			PrintUtils::printInstruction(stdout, ddgNode->getInstruction(), true);
+			printf(".");
+		}
+		printf("\n");
+	}
 }
 
 bool ModuloSchedulor::iterativeSchedule()

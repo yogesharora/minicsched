@@ -52,8 +52,8 @@ void c_optimize()
 	if (num_errors > 0)
 		return;
 
-	if (verbose)
-		print_list(stdout, instList);
+//	if (verbose)
+//		print_list(stdout, instList);
 
 	find_function(); /* remove extra instructions needed for simulation */
 
@@ -68,6 +68,7 @@ void c_optimize()
 	for(BasicBlockFinder::BasicBlockConstIter iter=basicBlockList.begin(); iter!=basicBlockList.end();iter++)
 	{
 		(*iter)->scheduleBlock(3);
+		(*iter)->print();
 	}
 
 	/* Find single basic block loops and perform Iterative Modulo Scheduling */

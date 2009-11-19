@@ -4,7 +4,7 @@
 
 OBJS :=  s3.lex.o s3.y.o minicsched.o \
 		DDG.o DDGNode.o BasicBlockFinder.o BasicBlock.o \
-		ModuloSchedulor.o
+		ModuloSchedulor.o PrintUtils.o
 
 all: sched
 

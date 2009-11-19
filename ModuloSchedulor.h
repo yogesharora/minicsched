@@ -53,6 +53,7 @@ class ModuloSchedulor
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d);
 	bool iterativeSchedule();
+	void print();
 	~ModuloSchedulor();
 };
 
