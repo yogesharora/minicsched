@@ -137,10 +137,10 @@ void DDGNode::addOutputDependency(DDGNode *dependent, int myIteration, int depen
 
 void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, int dependentIteration)
 {
-//	for(DependentListIter iter = dependents.begin(); iter!=dependents.end();iter++)
+//	for(SuccessorListIter iter = sucessors.begin(); iter!=sucessors.end();iter++)
 //	{
-//		DependentEdge &edge = *iter;
-//		if (edge.dependent->getNo() == dependent->getNo())
+//		Edge &edge = *iter;
+//		if (edge.node->getNo() == node->getNo())
 //		{
 //			// edge to same node exits
 //			// if the weight is more...add that edge else no need
@@ -151,18 +151,19 @@ void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, in
 //			return;
 //		}
 //	}
-	dependents.push_back(DependentEdge(dependent, edgeWeight, myIteration, dependentIteration));
-
+	sucessors.push_back(Edge(dependent, edgeWeight, myIteration, dependentIteration));
+	dependent->predecessor.push_back(Edge(dependent, edgeWeight, myIteration,
+			dependentIteration));
 }
 
 void DDGNode::printEdges()
 {
 	printf("Node No: %d ", instructionNumber);
-	for(DependentListIter iter = dependents.begin(); iter!=dependents.end();iter++)
+	for(SuccessorListIter iter = sucessors.begin(); iter!=sucessors.end();iter++)
 	{
-		DependentEdge &edge = *iter;
+		Edge &edge = *iter;
 		printf("(node-%d, latency-%d, myiter-%d, depIter-%d) ",
-				edge.dependent->getNo(), edge.edgeWeight, edge.myIteration,
+				edge.node->getNo(), edge.edgeWeight, edge.myIteration,
 				edge.dependentIteration);
 	}
 	printf("\n");

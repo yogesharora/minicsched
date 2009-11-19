@@ -20,25 +20,29 @@ public:
 	typedef std::set<Register> RegisterSet;
 	typedef RegisterSet::iterator RegisterSetIter;
 
-	struct DependentEdge
+	struct Edge
 	{
-		DDGNode* dependent;
+		DDGNode* node;
 		int edgeWeight;
 		int myIteration;
 		int dependentIteration;
 
-		DependentEdge(DDGNode* d, int e, int mi, int di)
+		Edge(DDGNode* d, int e, int mi, int di)
 		{
-			dependent = d;
+			node = d;
 			edgeWeight = e;
 			myIteration = mi;
 			dependentIteration = di;
 		}
 	};
 
-	typedef std::list<DependentEdge> DependentList;
-	typedef DependentList::iterator DependentListIter;
-	typedef DependentList::const_iterator DependentListConstIter;
+	typedef std::list<Edge> SuccessorList;
+	typedef SuccessorList::iterator SuccessorListIter;
+	typedef SuccessorList::const_iterator SuccessorListConstIter;
+
+	typedef std::list<Edge> PredecessorList;
+	typedef PredecessorList::iterator PredecessorListIter;
+	typedef PredecessorList::const_iterator PredecessorListConstIter;
 
 	DDGNode(inst_t instruction, int no);
 	virtual ~DDGNode();
@@ -46,7 +50,7 @@ public:
 	Register getDestReg() { return destReg;}
 	DDGNode::RegisterSet& getSrcRegisters() { return srcReg;}
 	int getNo() { return instructionNumber; }
-	const DependentList& getDependents() { return dependents; }
+	const SuccessorList& getSuccessors() { return sucessors; }
 
 	void addFlowDependency(DDGNode *dependent, int myIteration, int dependentIteration);
 	void addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration);
@@ -59,7 +63,8 @@ private:
 	int destReg;
 	bool rootNode;
 	RegisterSet srcReg;
-	DependentList dependents;
+	SuccessorList sucessors;
+	PredecessorList predecessor;
 	int latency;
 
 	DDGNode(DDGNode &);

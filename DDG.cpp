@@ -155,17 +155,17 @@ int DDG::getMaxCycleLength()
 
 void DDG::checkCycles(DDGNode* graphRoot, DDGNode* curNode, TraversalInfoArray infoArray)
 {
-	const DDGNode::DependentList& dependents = curNode->getDependents();
+	const DDGNode::SuccessorList& dependents = curNode->getSuccessors();
 	int graphRootInstructionNo = graphRoot->getNo();
 	int curNodeInstructionNo = curNode->getNo();
 	TraversalInfo &curNodeInfo = infoArray.traversalInfo[curNodeInstructionNo];
 	curNodeInfo.visited = true;
 
-	for (DDGNode::DependentListConstIter iter = dependents.begin(); iter
+	for (DDGNode::SuccessorListConstIter iter = dependents.begin(); iter
 			!= dependents.end(); iter++)
 	{
-		const DDGNode::DependentEdge dependentEdge = *iter;
-		DDGNode* dependentNode = dependentEdge.dependent;
+		const DDGNode::Edge dependentEdge = *iter;
+		DDGNode* dependentNode = dependentEdge.node;
 		int edgeLength = dependentEdge.edgeWeight;
 		int dependentNodeInstructionNo = dependentNode->getNo();
 		TraversalInfo &dependentInfo = infoArray.traversalInfo[dependentNodeInstructionNo];
