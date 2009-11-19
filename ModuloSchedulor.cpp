@@ -15,6 +15,14 @@ ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d) :
 
 	schedTime = new int[noOfInstructions];
 	memset(schedTime, INVALID_SCHEDULE_TIME, noOfInstructions * sizeof(int));
+
+	const DDG::DDGNodeList& instructions = ddg.getInstructions();
+	for (DDG::DDGNodeListConstIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
+	{
+		queue.push(*iter);
+	}
+
 }
 
 ModuloSchedulor::~ModuloSchedulor()
@@ -25,14 +33,6 @@ ModuloSchedulor::~ModuloSchedulor()
 
 bool ModuloSchedulor::iterativeSchedule()
 {
-	InstructionQueue queue;
-	const DDG::DDGNodeList& instructions = ddg.getInstructions();
-	for (DDG::DDGNodeListConstIter iter = instructions.begin(); iter
-			!= instructions.end(); iter++)
-	{
-		queue.push(*iter);
-	}
-
 	while (!queue.empty())
 	{
 		DDGNode* op = queue.top();
@@ -43,6 +43,63 @@ bool ModuloSchedulor::iterativeSchedule()
 		int maxTime = t + delta - 1;
 
 		int timeSlot = findTimeSlot(op, minTime, maxTime);
+
+		schedule(op, timeSlot);
+	}
+
+	if (queue.empty())
+		return true;
+	else
+		return false;
+}
+
+void ModuloSchedulor::schedule(DDGNode* op, int timeSlot)
+{
+	const DDGNode::SuccessorList& successors = op->getSuccessors();
+
+	for (DDGNode::SuccessorListConstIter iter = successors.begin(); iter
+			!= successors.end(); iter++)
+	{
+		const DDGNode::Edge &successorEdge = *iter;
+		int successorInstruction = successorEdge.node->getNo();
+		if (schedTime[successorInstruction] != INVALID_SCHEDULE_TIME
+				&& timeSlot + calculateDelay(delta, successorEdge)
+						> schedTime[successorInstruction])
+		{
+			unschedule(successorInstruction);
+		}
+	}
+
+	int moduloTimeSlot = timeSlot % delta;
+	if (mrt[moduloTimeSlot].size() >= k)
+	{
+		Cycle &cycle = mrt[moduloTimeSlot];
+		for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
+		{
+			queue.push(*iter);
+		}
+		cycle.clear();
+	}
+
+	mrt[moduloTimeSlot].push_back(op);
+	schedTime[op->getNo()] = timeSlot;
+	neverScheduled[op->getNo()] = false;
+}
+
+void ModuloSchedulor::unschedule(int instruction)
+{
+	int oldSchedule = schedTime[instruction] % delta;
+	schedTime[instruction] = INVALID_SCHEDULE_TIME;
+	Cycle &cycle = mrt[oldSchedule];
+
+	for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
+	{
+		if ((*iter)->getNo() == instruction)
+		{
+			cycle.erase(iter);
+			queue.push(*iter);
+			break;
+		}
 	}
 }
 

@@ -21,12 +21,17 @@ class ModuloSchedulor
 	int delta;
 	unsigned int k;
 	int noOfInstructions;
-	std::vector<std::list<DDGNode *> > mrt;
+
+	typedef std::list<DDGNode *> Cycle;
+	typedef Cycle::iterator CycleIter;
+	typedef std::vector<Cycle> Mrt;
+
+	Mrt mrt;
 	DDG& ddg;
+
 
 	struct DDGComp
 	{
-
 		bool operator () (DDGNode* a, DDGNode* b)
 		{
 			return a->getNo() < b->getNo();
@@ -36,10 +41,14 @@ class ModuloSchedulor
 	typedef std::priority_queue<DDGNode*, std::vector<DDGNode*>, DDGComp>
 				InstructionQueue;
 
+	InstructionQueue queue;
+
 	int calculateEarlyStart(DDGNode *op);
 	int calculateDelay(int delta, const DDGNode::Edge &edge);
 	int findTimeSlot(DDGNode *op, int minTime, int maxTime);
 	bool resourceConflict(int curTime);
+	void schedule(DDGNode* op, int time);
+	void unschedule(int instruction);
 
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d);
