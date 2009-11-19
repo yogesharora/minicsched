@@ -3,7 +3,8 @@
 .SECONDARY:
 
 OBJS :=  s3.lex.o s3.y.o minicsched.o \
-		DDG.o DDGNode.o BasicBlockFinder.o BasicBlock.o
+		DDG.o DDGNode.o BasicBlockFinder.o BasicBlock.o \
+		ModuloSchedulor.o
 
 all: sched
 
