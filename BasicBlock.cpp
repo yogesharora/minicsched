@@ -18,11 +18,31 @@ BasicBlock::~BasicBlock()
 
 }
 
+void BasicBlock::scheduleBlock(int k)
+{
+	calculateMII(k);
+	int delta = mII;
+
+	int done =  false;
+	while(!done)
+	{
+		Schedule *schedule = new Schedule(delta, k, noInstructions);
+		done = iterativeSchedule(delta, schedule);
+		delta++;
+	}
+}
+
 void BasicBlock::calculateMII(int k)
 {
-	resMII = ddg.getNoInstructions();
+	noInstructions = ddg.getNoInstructions();
+	resMII = noInstructions/k;
 	recMII = ddg.getMaxCycleLength();
 
 	printf("recMII %d\n", recMII);
 	mII = recMII > resMII ? recMII : resMII;
+}
+
+bool  BasicBlock::iterativeSchedule(int delta, Schedule *schedule)
+{
+
 }

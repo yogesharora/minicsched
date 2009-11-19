@@ -67,7 +67,7 @@ void c_optimize()
 	const BasicBlockFinder::BasicBlockList& basicBlockList = finder.getBasicBlocks();
 	for(BasicBlockFinder::BasicBlockConstIter iter=basicBlockList.begin(); iter!=basicBlockList.end();iter++)
 	{
-		(*iter)->calculateMII(3);
+		(*iter)->scheduleBlock(3);
 	}
 
 	/* Find single basic block loops and perform Iterative Modulo Scheduling */
