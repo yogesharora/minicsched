@@ -24,15 +24,14 @@ public:
 	{
 		DDGNode* node;
 		int edgeWeight;
-		int myIteration;
+		int iterationDistance;
 		int dependentIteration;
 
 		Edge(DDGNode* d, int e, int mi, int di)
 		{
 			node = d;
 			edgeWeight = e;
-			myIteration = mi;
-			dependentIteration = di;
+			iterationDistance = di - mi;
 		}
 	};
 
@@ -48,14 +47,20 @@ public:
 	virtual ~DDGNode();
 
 	Register getDestReg() { return destReg;}
+
 	DDGNode::RegisterSet& getSrcRegisters() { return srcReg;}
+
 	int getNo() { return instructionNumber; }
+
 	const SuccessorList& getSuccessors() { return sucessors; }
 
-	void addFlowDependency(DDGNode *dependent, int myIteration, int dependentIteration);
-	void addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration);
-	void addOutputDependency(DDGNode *dependent, int myIteration, int dependentIteration);
+	const PredecessorList& getPredecessors() { return predecessors; };
 
+	void addFlowDependency(DDGNode *dependent, int myIteration, int dependentIteration);
+
+	void addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration);
+
+	void addOutputDependency(DDGNode *dependent, int myIteration, int dependentIteration);
 
 private:
 	inst_t instruction;
@@ -64,7 +69,7 @@ private:
 	bool rootNode;
 	RegisterSet srcReg;
 	SuccessorList sucessors;
-	PredecessorList predecessor;
+	PredecessorList predecessors;
 	int latency;
 
 	DDGNode(DDGNode &);

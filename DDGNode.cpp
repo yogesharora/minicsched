@@ -152,7 +152,7 @@ void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, in
 //		}
 //	}
 	sucessors.push_back(Edge(dependent, edgeWeight, myIteration, dependentIteration));
-	dependent->predecessor.push_back(Edge(dependent, edgeWeight, myIteration,
+	dependent->predecessors.push_back(Edge(dependent, edgeWeight, myIteration,
 			dependentIteration));
 }
 
@@ -162,9 +162,8 @@ void DDGNode::printEdges()
 	for(SuccessorListIter iter = sucessors.begin(); iter!=sucessors.end();iter++)
 	{
 		Edge &edge = *iter;
-		printf("(node-%d, latency-%d, myiter-%d, depIter-%d) ",
-				edge.node->getNo(), edge.edgeWeight, edge.myIteration,
-				edge.dependentIteration);
+		printf("(node-%d, latency-%d, iterationDistance-%d) ",
+				edge.node->getNo(), edge.edgeWeight, edge.iterationDistance);
 	}
 	printf("\n");
 }

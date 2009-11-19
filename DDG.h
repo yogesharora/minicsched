@@ -17,11 +17,12 @@ class DDG
 public:
 	typedef std::vector<DDGNode*> DDGNodeList;
 	typedef DDGNodeList::iterator  DDGNodeListIter;
-
+	typedef DDGNodeList::const_iterator  DDGNodeListConstIter;
 
 	DDG(inst_t start, inst_t end);
 	int getMaxCycleLength();
 	int getNoInstructions() { return noOfInstructions;}
+	const DDGNodeList& getInstructions() { return graph; }
 	virtual ~DDG();
 
 private:

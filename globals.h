@@ -11,7 +11,7 @@
 #include <stddef.h>
 #define INVALID_REG -1
 #define R0 0
-
+#define INVALID_SCHEDULE_TIME -1
 typedef int Register;
 
 #endif /* GLOBALS_H_ */

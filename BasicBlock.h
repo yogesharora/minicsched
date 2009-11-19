@@ -11,6 +11,9 @@
 #include "s3inst.h"
 #include "DDG.h"
 #include "DDGNode.h"
+#include <queue>
+#include <vector>
+#include <list>
 
 class BasicBlock
 {
@@ -19,43 +22,44 @@ public:
 	struct Schedule
 	{
 
-		DDGNode ***mrt;
 		bool *neverScheduled;
-		DDGNode** schedTime;
+		int* schedTime;
 		int delta;
-		int k;
+		unsigned int k;
 		int noOfInstructions;
+		std::vector<std::list<DDGNode *> >mrt;
 
-		Schedule(int del, int res, int inst):
-			delta(del), k(res), noOfInstructions(inst)
+		Schedule(int del, int res, unsigned int inst):
+			delta(del), k(res), noOfInstructions(inst), mrt(del)
 		{
-			mrt = new DDGNode**[delta];
-			for(int i=0; i < delta ;i++)
-			{
-				mrt[i] = new DDGNode*[k];
-				memset(mrt[i], 0, k*sizeof(DDGNode*));
-			}
-
 			neverScheduled = new bool[noOfInstructions];
 			memset(neverScheduled, true, noOfInstructions*sizeof(bool));
 
-			schedTime = new DDGNode*[noOfInstructions];
-			memset(schedTime, 0, noOfInstructions*sizeof(DDGNode*));
+			schedTime = new int[noOfInstructions];
+			memset(schedTime, INVALID_SCHEDULE_TIME, noOfInstructions*sizeof(int));
 		}
 
 		Schedule::~Schedule()
 		{
 			delete[] neverScheduled;
 			delete[] schedTime;
-
-			for (int i = 0; i < delta; i++)
-				delete mrt[i];
-
-			delete[] mrt;
 		}
 	};
 
 private:
+
+	struct DDGComp
+	{
+
+		bool operator () (DDGNode* a, DDGNode* b)
+		{
+			return a->getNo() < b->getNo();
+		}
+	};
+
+	typedef std::priority_queue<DDGNode*, std::vector<DDGNode*>, DDGComp>
+			InstructionQueue;
+
 	int resMII;
 	int recMII;
 	int mII;
@@ -64,14 +68,17 @@ private:
 	Schedule *schedule;
 
 	void calculateMII(int k);
-
+	bool iterativeSchedule(Schedule *schedule);
+	int calculateEarlyStart(DDGNode *op, Schedule *schedule);
+	int calculateDelay(int delta, const DDGNode::Edge &edge);
+	int findTimeSlot(DDGNode *op, Schedule *schedule, int minTime, int maxTime);
+	bool resourceConflict(int curTime, Schedule *schedule);
 public:
 
 	BasicBlock(inst_t start, inst_t end);
 	~BasicBlock();
 
 	void scheduleBlock(int k);
-	bool iterativeSchedule(int delta, Schedule *schedule);
 };
 
 #endif /* BASICBLOCK_H_ */
