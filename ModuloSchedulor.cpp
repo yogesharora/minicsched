@@ -52,7 +52,6 @@ void ModuloSchedulor::rotate()
 	if (branchSchedTime < max)
 	{
 		// TODO take care of labels
-		// TODO take care of iteration numbers
 		for (int j = 0; j < max-branchSchedTime; j++)
 		{
 			Cycle lastCycle = mrt[0];
@@ -62,6 +61,13 @@ void ModuloSchedulor::rotate()
 				Cycle tempCycle = mrt[i];
 				mrt[i] = lastCycle;
 				lastCycle = tempCycle;
+			}
+
+			// change iteration values here
+			for (CycleIter iter = lastCycle.begin(); iter != lastCycle.end(); iter++)
+			{
+				DDGNodeSchedule &sched = *iter;
+				sched.iteration++;
 			}
 			mrt[0] = lastCycle;
 		}
