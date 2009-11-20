@@ -8,6 +8,7 @@
 #include "BasicBlock.h"
 #include "PrintUtils.h"
 #include <queue>
+#include <cmath>
 
 using namespace std;
 
@@ -54,7 +55,7 @@ void BasicBlock::scheduleBlock(int k)
 void BasicBlock::calculateMII(int k)
 {
 	noInstructions = ddg.getNoInstructions();
-	resMII = noInstructions / k;
+	resMII = ceil((float)noInstructions / (float)k);
 	recMII = ddg.getMaxCycleLength();
 
 	mII = recMII > resMII ? recMII : resMII;
@@ -76,6 +77,6 @@ void BasicBlock::print()
 
 void BasicBlock::printSchedule()
 {
-	fprintf(stdout, "\nRecMII %d, ResMII %d, MII, %d\n\n", recMII, resMII, mII);
+	fprintf(stdout, "\nRecMII %d, ResMII %d, MII %d\n\n", recMII, resMII, mII);
 	finalSchedule->print();
 }
