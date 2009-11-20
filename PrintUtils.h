@@ -19,6 +19,7 @@ class PrintUtils
 
 public:
 	static void printInstruction(FILE* fptr, inst_t i, bool cycle=false, char* labelsuffix="");
+	static void printInstructionList(FILE* fptr, inst_t i);
 };
 
 #endif /* PRINTUTILS_H_ */

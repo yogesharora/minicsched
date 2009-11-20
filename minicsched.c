@@ -5,6 +5,7 @@
 #include "cmdline.h"
 #include "S3Code.h"
 #include "BasicBlock.h"
+#include "PrintUtils.h"
 
 extern int num_errors;
 extern int yyerror(...);
@@ -54,8 +55,8 @@ void c_optimize()
 	if (num_errors > 0)
 		return;
 
-//	if (verbose)
-//		print_list(stdout, instList);
+	if (verbose)
+		PrintUtils::printInstructionList(stdout, instList);
 
 	find_function(); /* remove extra instructions needed for simulation */
 
@@ -71,9 +72,12 @@ void c_optimize()
 			iter != basicBlockList.end();
 			iter++)
 	{
-		(*iter)->print();
+		if(verbose)
+			(*iter)->print();
 		(*iter)->scheduleBlock(k);
-//		(*iter)->printSchedule();
+
+		if(verbose)
+			(*iter)->printSchedule(stdout);
 	}
 
 	/* Find single basic block loops and perform Iterative Modulo Scheduling */

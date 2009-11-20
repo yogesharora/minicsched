@@ -7,6 +7,16 @@
 
 #include "PrintUtils.h"
 
+void PrintUtils::printInstructionList(FILE* fptr, inst_t head)
+{
+	inst_t cur=head;
+	while(cur)
+	{
+		printInstruction(fptr, cur);
+		cur=cur->next;
+	}
+}
+
 void PrintUtils::printConditionCode(FILE *fptr, int ccode)
 {
 	if (ccode & CC_N)

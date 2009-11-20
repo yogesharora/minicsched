@@ -64,6 +64,7 @@ void BasicBlock::calculateMII(int k)
 void BasicBlock::print()
 {
 	inst_t head = start;
+	fprintf(stdout,";basic block start\n");
 	fprintf(stdout, "%s:", blockLabel);
 	while (head!=NULL && head!=end)
 	{
@@ -73,11 +74,12 @@ void BasicBlock::print()
 
 	if(head!=NULL)
 		PrintUtils::printInstruction(stdout, head);
+	fprintf(stdout,";basic block end\n");
 }
 
 void BasicBlock::printSchedule(FILE* fptr)
 {
-	fprintf(fptr,";block start RecMii:%d, ResMii:%d, Mii:%d\n", recMII, resMII, mII);
+	fprintf(fptr,";schedule start RecMii:%d, ResMii:%d, Mii:%d\n", recMII, resMII, mII);
 	finalSchedule->print(fptr);
-	fprintf(fptr,";block ends\n");
+	fprintf(fptr,";schedule ends\n");
 }
