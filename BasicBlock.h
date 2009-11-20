@@ -27,7 +27,7 @@ private:
 	DDG ddg;
 	int noInstructions;
 	ModuloSchedulor *finalSchedule;
-
+	char *blockLabel;
 	void calculateMII(int k);
 
 
@@ -36,7 +36,7 @@ public:
 	BasicBlock(inst_t start, inst_t end);
 	~BasicBlock();
 	void print();
-
+	void printSchedule();
 	void scheduleBlock(int k);
 };
 

@@ -8,8 +8,10 @@
 #include "ModuloSchedulor.h"
 #include "PrintUtils.h"
 
-ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d) :
-	delta(del), k(res), noOfInstructions(inst), mrt(del), ddg(d)
+ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d,
+		char* blockLabel) :
+	delta(del), k(res), noOfInstructions(inst), mrt(del), ddg(d), label(
+			blockLabel)
 {
 	neverScheduled = new bool[noOfInstructions];
 	memset(neverScheduled, true, noOfInstructions * sizeof(bool));
@@ -22,10 +24,6 @@ ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d) :
 			!= instructions.end(); iter++)
 	{
 		DDGNode *ddgNode= *iter;
-		if(iter == instructions.begin())
-		{
-			loopLabel = ddgNode->getInstruction()->label;
-		}
 		queue.push(ddgNode);
 	}
 
@@ -35,6 +33,15 @@ ModuloSchedulor::~ModuloSchedulor()
 {
 	delete[] neverScheduled;
 	delete[] schedTime;
+}
+
+void ModuloSchedulor::genPrologEpilogue()
+{
+	int maxIteration = 0;
+	for (int i = 0; i < noOfInstructions; i++)
+	{
+		maxIteration = schedTime[i] / delta > maxIteration ? schedTime[i] / delta : maxIteration;
+	}
 }
 
 void ModuloSchedulor::rotate()
@@ -68,6 +75,7 @@ void ModuloSchedulor::rotate()
 			{
 				DDGNodeSchedule &sched = *iter;
 				sched.iteration++;
+				schedTime[sched.ddgNode->getNo()] +=delta;
 			}
 			mrt[0] = lastCycle;
 		}
@@ -76,6 +84,7 @@ void ModuloSchedulor::rotate()
 
 void ModuloSchedulor::print()
 {
+	fprintf(stdout, "%s:", label);
 	for(int i=0;i<delta;i++)
 	{
 		Cycle &cycle = mrt[i];

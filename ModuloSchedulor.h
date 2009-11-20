@@ -21,7 +21,6 @@ class ModuloSchedulor
 	int delta;
 	unsigned int k;
 	int noOfInstructions;
-	char* loopLabel;
 
 	struct DDGNodeSchedule
 	{
@@ -38,8 +37,10 @@ class ModuloSchedulor
 	typedef std::vector<Cycle> Mrt;
 
 	Mrt mrt;
+	Mrt prolog;
+	Mrt epilogue;
 	DDG& ddg;
-
+	char *label;
 
 	struct DDGComp
 	{
@@ -62,9 +63,10 @@ class ModuloSchedulor
 	void unschedule(int instruction);
 
 public:
-	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d);
+	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d, char* blockLabel);
 	bool iterativeSchedule();
 	void rotate();
+	void genPrologEpilogue();
 	void print();
 	~ModuloSchedulor();
 };

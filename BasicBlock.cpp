@@ -14,7 +14,10 @@ using namespace std;
 BasicBlock::BasicBlock(inst_t s, inst_t e) :
 	start(s), end(e), ddg(start, end), finalSchedule(NULL)
 {
-
+	// remove the label of the block
+	// and store it
+	blockLabel = start->label;
+	start->label = NULL;
 }
 
 BasicBlock::~BasicBlock()
@@ -28,10 +31,11 @@ void BasicBlock::scheduleBlock(int k)
 	int delta = mII;
 
 	int done = false;
+
 	while (!done)
 	{
 		ModuloSchedulor *scheduler = new ModuloSchedulor(delta, k,
-				noInstructions, ddg);
+				noInstructions, ddg, blockLabel);
 		done = scheduler->iterativeSchedule();
 		if (done)
 		{
@@ -44,6 +48,7 @@ void BasicBlock::scheduleBlock(int k)
 		delta++;
 	}
 	finalSchedule->rotate();
+	finalSchedule->genPrologEpilogue();
 }
 
 void BasicBlock::calculateMII(int k)
@@ -58,6 +63,7 @@ void BasicBlock::calculateMII(int k)
 void BasicBlock::print()
 {
 	inst_t head = start;
+	fprintf(stdout, "%s:", blockLabel);
 	while (head!=NULL && head!=end)
 	{
 		PrintUtils::printInstruction(stdout, head);
@@ -66,8 +72,10 @@ void BasicBlock::print()
 
 	if(head!=NULL)
 		PrintUtils::printInstruction(stdout, head);
+}
 
-	fprintf(stdout, "RecMII %d, ResMII %d, MII, %d\n", recMII, resMII, mII);
-
+void BasicBlock::printSchedule()
+{
+	fprintf(stdout, "\nRecMII %d, ResMII %d, MII, %d\n\n", recMII, resMII, mII);
 	finalSchedule->print();
 }
