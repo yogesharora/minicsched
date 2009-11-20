@@ -21,6 +21,8 @@ void print_list(FILE*, inst_t);
 
 inst_t instList; /* list of instructions found by parser */
 
+extern int k;
+
 int main(int argc, char **argv)
 {
 	arglim = argv + argc;
@@ -67,7 +69,7 @@ void c_optimize()
 	const BasicBlockFinder::BasicBlockList& basicBlockList = finder.getBasicBlocks();
 	for(BasicBlockFinder::BasicBlockConstIter iter=basicBlockList.begin(); iter!=basicBlockList.end();iter++)
 	{
-		(*iter)->scheduleBlock(4);
+		(*iter)->scheduleBlock(k);
 		(*iter)->print();
 	}
 
