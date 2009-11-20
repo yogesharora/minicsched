@@ -272,8 +272,8 @@ void ModuloSchedulor::unschedule(int instruction)
 	{
 		if (iter->ddgNode->getNo() == instruction)
 		{
-			cycle.erase(iter);
 			queue.push(iter->ddgNode);
+			cycle.erase(iter);
 			break;
 		}
 	}

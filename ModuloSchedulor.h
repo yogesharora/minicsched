@@ -70,7 +70,7 @@ class ModuloSchedulor
     void genEpilogue(int maxIteration, int branchIterationNo);
 
     void printMrt(Mrt& table);
-    void ModuloSchedulor::printInstruction(InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
+    void printInstruction(InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
     inst_t createNewBranchInst(inst_t ddgOnstruction, int i);
 
 public:
