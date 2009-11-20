@@ -3,7 +3,7 @@
 #include <string.h>
 #include "s3inst.h"
 #include "cmdline.h"
-#include "BasicBlockFinder.h"
+#include "S3Code.h"
 #include "BasicBlock.h"
 
 extern int num_errors;
@@ -64,10 +64,12 @@ void c_optimize()
 	/************************************************************************/
 	/************************************************************************/
 	/*    Call your implementation from here                                */
-	BasicBlockFinder finder(instList);
+	S3Code finder(instList);
 	finder.findBasicBlocks();
-	const BasicBlockFinder::BasicBlockList& basicBlockList = finder.getBasicBlocks();
-	for(BasicBlockFinder::BasicBlockConstIter iter=basicBlockList.begin(); iter!=basicBlockList.end();iter++)
+	const S3Code::BasicBlockList& basicBlockList = finder.getBasicBlocks();
+	for(S3Code::BasicBlockConstIter iter=basicBlockList.begin();
+			iter != basicBlockList.end();
+			iter++)
 	{
 		(*iter)->print();
 		(*iter)->scheduleBlock(k);
@@ -81,7 +83,8 @@ void c_optimize()
 	/************************************************************************/
 	/************************************************************************/
 
-	print_list( fptr, instList); /* dump code to output file */
+	// dump code to file
+
 
 	codegen_exit(fptr);
 	fclose(fptr); /* close file */
@@ -154,106 +157,5 @@ void find_function()
 	else
 	{
 		/*printf("Warning: Did not find .END.\n");*/
-	}
-}
-
-void print_cc(FILE *fptr, int ccode)
-{
-	if (ccode & CC_N)
-		fprintf(fptr, "n");
-	if (ccode & CC_Z)
-		fprintf(fptr, "z");
-	if (ccode & CC_P)
-		fprintf(fptr, "p");
-
-	fprintf(fptr, " ");
-}
-
-void print_op(FILE *fptr, struct operand op)
-{
-	enum op_type t = op.t;
-	switch (t)
-	{
-		case op_reg :
-			fprintf(fptr, "R%d", op.reg);
-			break;
-		case op_imm :
-			fprintf(fptr, "#%d", op.imm);
-			break;
-		case op_label :
-			fprintf(fptr, "%s", op.label);
-			break;
-	}
-}
-
-void print_inst(FILE* fptr, inst_t i)
-{
-	if (i->label)
-	{
-		fprintf(fptr, "%s:", i->label);
-	}
-
-	if (i->op == OP_BR)
-	{
-		fprintf(fptr, "\t%s", opnames[i->op]);
-		print_cc(fptr, i->ccode);
-	}
-	else
-		fprintf(fptr, "\t%s ", opnames[i->op]);
-
-	switch (i->op)
-	{
-
-		/* 3 operands */
-		case OP_ADD :
-		case OP_AND :
-		case OP_ANDL :
-		case OP_DIV :
-		case OP_LDR :
-		case OP_MUL :
-		case OP_OR :
-		case OP_ORL :
-		case OP_STR :
-		case OP_SUB :
-			print_op(fptr, i->ops[0]);
-			fprintf(fptr, ", ");
-			print_op(fptr, i->ops[1]);
-			fprintf(fptr, ", ");
-			print_op(fptr, i->ops[2]);
-			break;
-			/* 2 operands */
-		case OP_BR :
-		case OP_SET :
-		case OP_ST :
-		case OP_STI :
-		case OP_LD :
-		case OP_LDI :
-		case OP_LEA :
-		case OP_NOT :
-		case OP_NOTL :
-			print_op(fptr, i->ops[0]);
-			fprintf(fptr, ", ");
-			print_op(fptr, i->ops[1]);
-			break;
-
-			/* one operand */
-		case OP_JSRR :
-		case OP_BRA :
-		case OP_JMP :
-		case OP_JSR :
-			print_op(fptr, i->ops[0]);
-
-		default :
-			break;
-	}
-	fprintf(fptr, "\n");
-}
-
-void print_list(FILE *fptr, inst_t head)
-{
-	while (head)
-	{
-		print_inst(fptr, head);
-		head = head->next;
 	}
 }

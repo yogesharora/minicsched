@@ -1,21 +1,21 @@
 /*
- * BasicBlockFinder.cpp
+ * S3Code.cpp
  *
  *  Created on: Nov 11, 2009
  *      Author: Yogesh Arora
  */
 
-#include "BasicBlockFinder.h"
+#include "S3Code.h"
 #include <stack>
 
 using namespace std;
 
-BasicBlockFinder::BasicBlockFinder(inst_t startInst) :
+S3Code::S3Code(inst_t startInst) :
 	startInstruction(startInst)
 {
 }
 
-BasicBlockFinder::~BasicBlockFinder()
+S3Code::~S3Code()
 {
 	for (BasicBlockIter iter = basicBlocks.begin(); iter != basicBlocks.end(); iter++)
 	{
@@ -23,7 +23,7 @@ BasicBlockFinder::~BasicBlockFinder()
 	}
 }
 
-void BasicBlockFinder::findBasicBlocks()
+void S3Code::findBasicBlocks()
 {
 	stack<inst_t> lastLabelStack;
 	inst_t cur = startInstruction;
@@ -60,7 +60,7 @@ void BasicBlockFinder::findBasicBlocks()
 	}
 }
 
-const BasicBlockFinder::BasicBlockList& BasicBlockFinder::getBasicBlocks()
+const S3Code::BasicBlockList& S3Code::getBasicBlocks()
 {
 	return basicBlocks;
 }
