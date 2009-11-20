@@ -180,6 +180,8 @@ void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table,
 		}
 		if(cycle.size()>0)
 			fprintf(fptr,"\n");
+		else
+			fprintf(fptr,"\tNOP\n");
 	}
 }
 
