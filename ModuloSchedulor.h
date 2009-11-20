@@ -71,7 +71,7 @@ class ModuloSchedulor
 
     void printMrt(Mrt& table);
     void ModuloSchedulor::printInstruction(InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
-    inst_t createNewBranchInst(inst_t & ddgOnstruction, int & i);
+    inst_t createNewBranchInst(inst_t ddgOnstruction, int i);
 
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d, char* blockLabel);

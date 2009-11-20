@@ -35,13 +35,13 @@ ModuloSchedulor::~ModuloSchedulor()
 	delete[] schedTime;
 }
 
-inst_t ModuloSchedulor::createNewBranchInst(inst_t & ddgOnstruction, int & i)
+inst_t ModuloSchedulor::createNewBranchInst(inst_t ddgOnstruction, int i)
 {
     inst_t inst = new inst_d();
     *inst = *ddgOnstruction;
     inst->ccode = ~inst->ccode;
     inst->ops[1].label = new char[strlen(label) + 20];
-    sprintf(inst->ops[1].label, "%s_EE%d", label, i);
+    sprintf(inst->ops[1].label, "%s_EE%d", label, i/delta);
     return inst;
 }
 
@@ -172,6 +172,9 @@ void ModuloSchedulor::printInstruction(InstructionSched& table, bool printLabel,
 
 		for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
+			if (iter != cycle.begin())
+				fprintf(stdout,".");
+
 			PrintUtils::printInstruction(stdout, *iter, true);
 		}
 		if(cycle.size()>0)
