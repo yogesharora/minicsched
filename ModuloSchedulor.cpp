@@ -151,10 +151,12 @@ void ModuloSchedulor::rotate()
 
 void ModuloSchedulor::print(FILE* fptr)
 {
+	fprintf(fptr,";prolog\n");
 	fprintf(fptr,"%s:", label);
 	printInstruction(fptr, prolog);
+	fprintf(fptr,";kernel\n");
 	printMrt(fptr, mrt);
-
+	fprintf(fptr,";epilogue\n");
 	printInstruction(fptr, epilogue, true, "_EE");
 }
 

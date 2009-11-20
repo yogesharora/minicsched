@@ -77,5 +77,7 @@ void BasicBlock::print()
 
 void BasicBlock::printSchedule(FILE* fptr)
 {
+	fprintf(fptr,";block start RecMii:%d, ResMii:%d, Mii:%d\n", recMII, resMII, mII);
 	finalSchedule->print(fptr);
+	fprintf(fptr,";block ends\n");
 }
