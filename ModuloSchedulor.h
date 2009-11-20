@@ -35,11 +35,24 @@ class ModuloSchedulor
 		}
 	};
 
+	struct PrologEpilogueSchedule
+	{
+		inst_t inst;
+		int iteration;
+
+		PrologEpilogueSchedule(inst_t d, int i) :
+			inst(d), iteration(i)
+		{
+
+		}
+
+	};
+
 	typedef std::list<DDGNodeSchedule> Cycle;
 	typedef Cycle::iterator CycleIter;
 	typedef std::vector<Cycle> Mrt;
 
-	typedef std::list<inst_t> InstCycle;
+	typedef std::list<PrologEpilogueSchedule> InstCycle;
 	typedef InstCycle::iterator InstCycleIter;
 	typedef std::vector<InstCycle> InstructionSched;
 

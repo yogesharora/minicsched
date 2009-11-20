@@ -62,11 +62,13 @@ void ModuloSchedulor::genProlog(int maxIteration)
 					if(ddgOnstruction->op == OP_BR)
 					{
 					    inst_t inst = createNewBranchInst(ddgOnstruction, i);
-						prolog[i*delta + j].push_back(inst);
+						prolog[i*delta + j].push_back(PrologEpilogueSchedule(inst,
+								iter->iteration));
 					}
 					else
 					{
-						prolog[i*delta + j].push_back(ddgOnstruction);
+						prolog[i * delta + j].push_back(PrologEpilogueSchedule(
+								ddgOnstruction, iter->iteration));
 					}
 				}
 			}
@@ -78,7 +80,7 @@ void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo)
 {
 	int n = maxIteration - branchIterationNo;
 	epilogue.reserve(n * delta);
-	for (int i = 0; i < n; i++)
+	for (int i = branchIterationNo; i < maxIteration; i++)
 	{
 		for (int j = 0; j < delta; j++)
 		{
@@ -91,7 +93,9 @@ void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo)
 					inst_t ddgOnstruction = iter->ddgNode->getInstruction();
 					if(ddgOnstruction->op != OP_BR)
 					{
-						epilogue[i*delta + j].push_back(ddgOnstruction);
+						epilogue[(i - branchIterationNo) * delta + j].push_back(
+								PrologEpilogueSchedule(ddgOnstruction,
+										iter->iteration));
 					}
 				}
 			}
@@ -176,7 +180,8 @@ void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table,
 			if (iter != cycle.begin())
 				fprintf(fptr,".");
 
-			PrintUtils::printInstruction(fptr, *iter, true);
+			PrintUtils::printInstruction(fptr, (*iter).inst, true);
+			fprintf(fptr,"(%d)", iter->iteration);
 		}
 		if(cycle.size()>0)
 			fprintf(fptr,"\n");
@@ -198,6 +203,8 @@ void ModuloSchedulor::printMrt(FILE* fptr, Mrt& table)
 			DDGNode* ddgNode = iter->ddgNode;
 			PrintUtils::printInstruction(fptr, ddgNode->getInstruction(),
 					true, "_K");
+
+			fprintf(fptr,"(%d)", iter->iteration);
 		}
 		if(cycle.size()>0)
 			fprintf(fptr,"\n");
