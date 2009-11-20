@@ -67,8 +67,11 @@ class ModuloSchedulor
 	void schedule(DDGNode* op, int time);
 	void unschedule(int instruction);
     void genProlog(int maxIteration);
+    void genEpilogue(int maxIteration, int branchIterationNo);
+
     void printMrt(Mrt& table);
-    void printInstruction(InstructionSched& table);
+    void ModuloSchedulor::printInstruction(InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
+    inst_t createNewBranchInst(inst_t & ddgOnstruction, int & i);
 
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d, char* blockLabel);

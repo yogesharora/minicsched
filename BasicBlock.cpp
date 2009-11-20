@@ -55,7 +55,7 @@ void BasicBlock::scheduleBlock(int k)
 void BasicBlock::calculateMII(int k)
 {
 	noInstructions = ddg.getNoInstructions();
-	resMII = ceil((float)noInstructions / (float)k);
+	resMII = (int)ceil((float)noInstructions / (float)k);
 	recMII = ddg.getMaxCycleLength();
 
 	mII = recMII > resMII ? recMII : resMII;
