@@ -146,7 +146,7 @@ void ModuloSchedulor::printInstruction(InstructionSched& table)
 
 void ModuloSchedulor::printMrt(Mrt& table)
 {
-	fprintf(stdout, "%s_P:", label);
+	fprintf(stdout, "%s_K:", label);
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
 		Cycle &cycle = table[i];
@@ -156,7 +156,7 @@ void ModuloSchedulor::printMrt(Mrt& table)
 				printf(".");
 			DDGNode* ddgNode = iter->ddgNode;
 			PrintUtils::printInstruction(stdout, ddgNode->getInstruction(),
-					true, "_P");
+					true, "_K");
 
 		}
 		if(cycle.size()>0)
