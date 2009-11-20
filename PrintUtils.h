@@ -15,10 +15,10 @@
 class PrintUtils
 {
 	static void printConditionCode(FILE *fptr, int ccode);
-	static void printOperand(FILE *fptr, struct operand op);
+	static void printOperand(FILE *fptr, struct operand op, char *labelsuffix="");
 
 public:
-	static void printInstruction(FILE* fptr, inst_t i, bool cycle=false);
+	static void printInstruction(FILE* fptr, inst_t i, bool cycle=false, char* labelsuffix="");
 };
 
 #endif /* PRINTUTILS_H_ */

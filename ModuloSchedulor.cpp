@@ -37,17 +37,32 @@ ModuloSchedulor::~ModuloSchedulor()
 
 void ModuloSchedulor::genProlog(int maxIteration)
 {
-	prolog.reserve(maxIteration);
+	prolog.reserve(maxIteration * delta);
 	for (int i = 0; i < maxIteration; i++)
 	{
 		for (int j = 0; j < delta; j++)
 		{
+			prolog.push_back(InstCycle());
 			Cycle & cycle = mrt[j];
 			for (CycleIter iter = cycle.begin(); iter != cycle.end(); ++iter)
 			{
-				if (iter->iteration < i)
+				if (iter->iteration <= i)
 				{
-					prolog[i].push_back(*iter);
+					inst_t ddgOnstruction = iter->ddgNode->getInstruction();
+					if(ddgOnstruction->op == OP_BR)
+					{
+						// need to change the branch
+						inst_t inst =  new inst_d();
+						*inst = *ddgOnstruction;
+						inst->ccode=~inst->ccode;
+						inst->ops[1].label = new char[strlen(label)+20];
+						sprintf(inst->ops[1].label, "%s_EE%d", label, i);
+						prolog[i*delta + j].push_back(inst);
+					}
+					else
+					{
+						prolog[i*delta + j].push_back(ddgOnstruction);
+					}
 				}
 			}
 		}
@@ -108,16 +123,44 @@ void ModuloSchedulor::rotate()
 void ModuloSchedulor::print()
 {
 	fprintf(stdout, "%s:", label);
-	for(int i=0;i<delta;i++)
+	printInstruction(prolog);
+	printMrt(mrt);
+	printf("\n");
+}
+
+void ModuloSchedulor::printInstruction(InstructionSched& table)
+{
+	for (unsigned int i = 0; i < table.size(); i++)
 	{
-		Cycle &cycle = mrt[i];
+		InstCycle &cycle = table[i];
+		for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
+		{
+			PrintUtils::printInstruction(stdout, *iter,
+					true);
+		}
+		if(cycle.size()>0)
+			printf("\n");
+	}
+	printf("\n");
+}
+
+void ModuloSchedulor::printMrt(Mrt& table)
+{
+	fprintf(stdout, "%s_P:", label);
+	for (unsigned int i = 0; i < table.size(); i++)
+	{
+		Cycle &cycle = table[i];
 		for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
+			if (iter != cycle.begin())
+				printf(".");
 			DDGNode* ddgNode = iter->ddgNode;
-			PrintUtils::printInstruction(stdout, ddgNode->getInstruction(), true);
-			printf(".");
+			PrintUtils::printInstruction(stdout, ddgNode->getInstruction(),
+					true, "_P");
+
 		}
-		printf("\n");
+		if(cycle.size()>0)
+			printf("\n");
 	}
 	printf("\n");
 }

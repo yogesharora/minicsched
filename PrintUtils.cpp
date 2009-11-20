@@ -19,7 +19,7 @@ void PrintUtils::printConditionCode(FILE *fptr, int ccode)
 	fprintf(fptr, " ");
 }
 
-void PrintUtils::printOperand(FILE *fptr, struct operand op)
+void PrintUtils::printOperand(FILE *fptr, struct operand op, char* labelsuffix)
 {
 	enum op_type t = op.t;
 	switch (t)
@@ -31,12 +31,12 @@ void PrintUtils::printOperand(FILE *fptr, struct operand op)
 			fprintf(fptr, "#%d", op.imm);
 			break;
 		case op_label :
-			fprintf(fptr, "%s", op.label);
+			fprintf(fptr, "%s%s", op.label, labelsuffix);
 			break;
 	}
 }
 
-void PrintUtils::printInstruction(FILE* fptr, inst_t i, bool cycle)
+void PrintUtils::printInstruction(FILE* fptr, inst_t i, bool cycle, char* labelsuffix)
 {
 	if (i->label)
 	{
@@ -83,7 +83,7 @@ void PrintUtils::printInstruction(FILE* fptr, inst_t i, bool cycle)
 		case OP_NOTL :
 			printOperand(fptr, i->ops[0]);
 			fprintf(fptr, ", ");
-			printOperand(fptr, i->ops[1]);
+			printOperand(fptr, i->ops[1], labelsuffix);
 			break;
 
 			/* one operand */

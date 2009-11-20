@@ -32,13 +32,18 @@ class ModuloSchedulor
 
 		}
 	};
+
 	typedef std::list<DDGNodeSchedule> Cycle;
 	typedef Cycle::iterator CycleIter;
 	typedef std::vector<Cycle> Mrt;
 
+	typedef std::list<inst_t> InstCycle;
+	typedef InstCycle::iterator InstCycleIter;
+	typedef std::vector<InstCycle> InstructionSched;
+
 	Mrt mrt;
-	Mrt prolog;
-	Mrt epilogue;
+	InstructionSched prolog;
+	InstructionSched epilogue;
 	DDG& ddg;
 	char *label;
 
@@ -62,6 +67,8 @@ class ModuloSchedulor
 	void schedule(DDGNode* op, int time);
 	void unschedule(int instruction);
     void genProlog(int maxIteration);
+    void printMrt(Mrt& table);
+    void printInstruction(InstructionSched& table);
 
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d, char* blockLabel);
