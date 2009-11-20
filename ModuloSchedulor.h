@@ -13,6 +13,8 @@
 #include <queue>
 #include <vector>
 #include <list>
+#include <cstdio>
+#include <cstdlib>
 
 class ModuloSchedulor
 {
@@ -69,8 +71,8 @@ class ModuloSchedulor
     void genProlog(int maxIteration);
     void genEpilogue(int maxIteration, int branchIterationNo);
 
-    void printMrt(Mrt& table);
-    void printInstruction(InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
+    void printMrt(FILE* fptr, Mrt& table);
+    void printInstruction(FILE* fptr, InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
     inst_t createNewBranchInst(inst_t ddgOnstruction, int i);
 
 public:
@@ -78,7 +80,7 @@ public:
 	bool iterativeSchedule();
 	void rotate();
 	void genPrologEpilogue();
-	void print();
+	void print(FILE* fptr);
 	~ModuloSchedulor();
 };
 

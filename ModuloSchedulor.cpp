@@ -149,59 +149,55 @@ void ModuloSchedulor::rotate()
 	}
 }
 
-void ModuloSchedulor::print()
+void ModuloSchedulor::print(FILE* fptr)
 {
-	fprintf(stdout,"%s:", label);
-	printInstruction(prolog);
-	printMrt(mrt);
+	fprintf(fptr,"%s:", label);
+	printInstruction(fptr, prolog);
+	printMrt(fptr, mrt);
 
-	printInstruction(epilogue, true, "_EE");
-
-	fprintf(stdout,"\n");
+	printInstruction(fptr, epilogue, true, "_EE");
 }
 
-void ModuloSchedulor::printInstruction(InstructionSched& table, bool printLabel, char *labelSuffix)
+void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table,
+		bool printLabel, char *labelSuffix)
 {
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
 		InstCycle &cycle = table[i];
 		if(printLabel && i%delta==0)
 		{
-			fprintf(stdout,"%s%s%d:", label, labelSuffix,i/delta);
+			fprintf(fptr,"%s%s%d:", label, labelSuffix,i/delta);
 		}
 
 		for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
 			if (iter != cycle.begin())
-				fprintf(stdout,".");
+				fprintf(fptr,".");
 
-			PrintUtils::printInstruction(stdout, *iter, true);
+			PrintUtils::printInstruction(fptr, *iter, true);
 		}
 		if(cycle.size()>0)
-			fprintf(stdout,"\n");
+			fprintf(fptr,"\n");
 	}
-	fprintf(stdout,"\n");
 }
 
-void ModuloSchedulor::printMrt(Mrt& table)
+void ModuloSchedulor::printMrt(FILE* fptr, Mrt& table)
 {
-	fprintf(stdout, "%s_K:", label);
+	fprintf(fptr, "%s_K:", label);
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
 		Cycle &cycle = table[i];
 		for (CycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
 			if (iter != cycle.begin())
-				fprintf(stdout,".");
+				fprintf(fptr,".");
 			DDGNode* ddgNode = iter->ddgNode;
-			PrintUtils::printInstruction(stdout, ddgNode->getInstruction(),
+			PrintUtils::printInstruction(fptr, ddgNode->getInstruction(),
 					true, "_K");
-			fprintf(stdout,"(%d)", iter->iteration);
 		}
 		if(cycle.size()>0)
-			fprintf(stdout,"\n");
+			fprintf(fptr,"\n");
 	}
-	fprintf(stdout,"\n");
 }
 
 bool ModuloSchedulor::iterativeSchedule()

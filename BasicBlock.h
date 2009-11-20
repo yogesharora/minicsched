@@ -11,6 +11,8 @@
 #include "s3inst.h"
 #include "DDG.h"
 #include "DDGNode.h"
+#include <cstdio>
+#include <cstdlib>
 #include "ModuloSchedulor.h"
 #include <queue>
 #include <vector>
@@ -36,7 +38,7 @@ public:
 	BasicBlock(inst_t start, inst_t end);
 	~BasicBlock();
 	void print();
-	void printSchedule();
+	void printSchedule(FILE* fptr);
 	void scheduleBlock(int k);
 };
 

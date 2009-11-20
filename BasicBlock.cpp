@@ -75,8 +75,7 @@ void BasicBlock::print()
 		PrintUtils::printInstruction(stdout, head);
 }
 
-void BasicBlock::printSchedule()
+void BasicBlock::printSchedule(FILE* fptr)
 {
-	fprintf(stdout, "\nRecMII %d, ResMII %d, MII %d\n\n", recMII, resMII, mII);
-	finalSchedule->print();
+	finalSchedule->print(fptr);
 }

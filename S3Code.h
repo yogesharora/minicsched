@@ -11,23 +11,27 @@
 #include "BasicBlock.h"
 #include "s3inst.h"
 #include <vector>
-#include <map>
+#include <queue>
 
 class S3Code
 {
 public:
+	typedef std::queue<inst_t> BasicBlockBoundary;
 	typedef std::vector<BasicBlock*> BasicBlockList;
 	typedef BasicBlockList::iterator BasicBlockIter;
 	typedef BasicBlockList::const_iterator BasicBlockConstIter;
 
 	S3Code(inst_t startInst);
 	~S3Code();
+
 	void findBasicBlocks();
 	const BasicBlockList& getBasicBlocks();
 
-	BasicBlockList basicBlocks;
+	void writeToOutput(FILE *fptr);
 
 private:
+	BasicBlockList basicBlocks;
+	BasicBlockBoundary basicBlocksBoundary;
 	inst_t startInstruction;
 };
 

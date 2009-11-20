@@ -6,6 +6,7 @@
  */
 
 #include "S3Code.h"
+#include "PrintUtils.h"
 #include <stack>
 
 using namespace std;
@@ -46,6 +47,8 @@ void S3Code::findBasicBlocks()
 			{
 				// found a basic block
 				basicBlocks.push_back(new BasicBlock(lastLabelInstruction, cur));
+				basicBlocksBoundary.push(lastLabelInstruction);
+				basicBlocksBoundary.push(cur);
 			}
 			else
 			{
@@ -56,6 +59,41 @@ void S3Code::findBasicBlocks()
 		{
 			lastLabelStack.push(cur);
 		}
+		cur = cur->next;
+	}
+}
+
+void S3Code::writeToOutput(FILE *fptr)
+{
+	inst_t cur = startInstruction;
+	bool basicBlockBegin=false;
+	BasicBlockIter basicBlockIter = basicBlocks.begin();
+	while (cur != NULL)
+	{
+		inst_t basicBlockElement = basicBlocksBoundary.front();
+
+		if (basicBlockBegin)
+		{
+			if (cur == basicBlockElement)
+			{
+				basicBlockBegin = false;
+				basicBlocksBoundary.pop();
+			}
+		}
+		else if (cur == basicBlockElement)
+		{
+			// basic block has begun
+			basicBlockBegin = true;
+			basicBlocksBoundary.pop();
+			(*basicBlockIter)->printSchedule(fptr);
+		}
+		else
+		{
+			// its not part of basic block
+			// print it
+			PrintUtils::printInstruction(fptr, cur);
+		}
+
 		cur = cur->next;
 	}
 }

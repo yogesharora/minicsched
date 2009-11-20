@@ -64,16 +64,16 @@ void c_optimize()
 	/************************************************************************/
 	/************************************************************************/
 	/*    Call your implementation from here                                */
-	S3Code finder(instList);
-	finder.findBasicBlocks();
-	const S3Code::BasicBlockList& basicBlockList = finder.getBasicBlocks();
+	S3Code s3Code(instList);
+	s3Code.findBasicBlocks();
+	const S3Code::BasicBlockList& basicBlockList = s3Code.getBasicBlocks();
 	for(S3Code::BasicBlockConstIter iter=basicBlockList.begin();
 			iter != basicBlockList.end();
 			iter++)
 	{
 		(*iter)->print();
 		(*iter)->scheduleBlock(k);
-		(*iter)->printSchedule();
+//		(*iter)->printSchedule();
 	}
 
 	/* Find single basic block loops and perform Iterative Modulo Scheduling */
@@ -84,7 +84,7 @@ void c_optimize()
 	/************************************************************************/
 
 	// dump code to file
-
+	s3Code.writeToOutput(fptr);
 
 	codegen_exit(fptr);
 	fclose(fptr); /* close file */
