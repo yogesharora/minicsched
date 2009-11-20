@@ -35,6 +35,27 @@ ModuloSchedulor::~ModuloSchedulor()
 	delete[] schedTime;
 }
 
+void ModuloSchedulor::genProlog(int maxIteration)
+{
+	prolog.reserve(maxIteration);
+	for (int i = 0; i < maxIteration; i++)
+	{
+		for (int j = 0; j < delta; j++)
+		{
+			Cycle & cycle = mrt[j];
+			for (CycleIter iter = cycle.begin(); iter != cycle.end(); ++iter)
+			{
+				if (iter->iteration < i)
+				{
+					prolog[i].push_back(*iter);
+				}
+			}
+		}
+
+	}
+
+}
+
 void ModuloSchedulor::genPrologEpilogue()
 {
 	int maxIteration = 0;
@@ -42,6 +63,9 @@ void ModuloSchedulor::genPrologEpilogue()
 	{
 		maxIteration = schedTime[i] / delta > maxIteration ? schedTime[i] / delta : maxIteration;
 	}
+
+	int branchIterationNo = schedTime[noOfInstructions-1] / delta;
+    genProlog(maxIteration);
 }
 
 void ModuloSchedulor::rotate()
@@ -58,7 +82,6 @@ void ModuloSchedulor::rotate()
 
 	if (branchSchedTime < max)
 	{
-		// TODO take care of labels
 		for (int j = 0; j < max-branchSchedTime; j++)
 		{
 			Cycle lastCycle = mrt[0];
@@ -214,7 +237,6 @@ int ModuloSchedulor::calculateEarlyStart(DDGNode *op)
 	// does operation scheduling
 	const DDGNode::PredecessorList& predecessors = op->getPredecessors();
 
-	// TODO check this
 	int tmin = schedTime[op->getNo()];
 
 	for (DDGNode::PredecessorListConstIter iter = predecessors.begin(); iter

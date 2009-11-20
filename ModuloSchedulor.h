@@ -61,6 +61,7 @@ class ModuloSchedulor
 	bool resourceConflict(int curTime);
 	void schedule(DDGNode* op, int time);
 	void unschedule(int instruction);
+    void genProlog(int maxIteration);
 
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d, char* blockLabel);
