@@ -132,6 +132,8 @@ void OperationScheduler::scheduleInstruction(int nodeDestReg,
 		latestUseTime[srcRegIndex] = t > latestUseTime[srcRegIndex] ? t
 				: latestUseTime[srcRegIndex];
 	}
+
+	instruction->setDepth(t);
 }
 
 void OperationScheduler::print(FILE* fptr)

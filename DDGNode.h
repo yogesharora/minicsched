@@ -67,6 +67,7 @@ public:
 
 	int getLatency() { return latency; }
 
+	void setDepth(int d) { depth=d;};
 private:
 	inst_t instruction;
 	int instructionNumber;
@@ -76,6 +77,7 @@ private:
 	SuccessorList sucessors;
 	PredecessorList predecessors;
 	int latency;
+	int depth;
 
 	DDGNode(DDGNode &);
 	void initRegisterInfo();
