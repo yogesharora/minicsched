@@ -13,7 +13,8 @@
 using namespace std;
 
 BasicBlock::BasicBlock(inst_t s, inst_t e) :
-	start(s), end(e), ddg(start, end), finalSchedule(NULL)
+	start(s), end(e), ddg(start, end), finalSchedule(NULL),
+	opScheduler(NULL), moduloSchedulorUsed(true)
 {
 	// remove the label of the block
 	// and store it
@@ -24,16 +25,18 @@ BasicBlock::BasicBlock(inst_t s, inst_t e) :
 BasicBlock::~BasicBlock()
 {
 	delete finalSchedule;
+	delete opScheduler;
 }
 
 void BasicBlock::scheduleBlock(int k)
 {
 	calculateMII(k);
 	int delta = mII;
+	opScheduler = new OperationScheduler(ddg, k, blockLabel);
 
+	int opSchedTime = opScheduler->schedule();
 	int done = false;
-
-	while (!done)
+	while (!done && opSchedTime > delta)
 	{
 		ModuloSchedulor *scheduler = new ModuloSchedulor(delta, k,
 				noInstructions, ddg, blockLabel);
@@ -48,8 +51,17 @@ void BasicBlock::scheduleBlock(int k)
 		}
 		delta++;
 	}
-	finalSchedule->rotate();
-	finalSchedule->genPrologEpilogue();
+
+	if (done)
+	{
+		finalSchedule->rotate();
+		finalSchedule->genPrologEpilogue();
+	}
+
+	if(opSchedTime <= delta)
+	{
+		moduloSchedulorUsed = false;
+	}
 }
 
 void BasicBlock::calculateMII(int k)
@@ -79,7 +91,18 @@ void BasicBlock::print()
 
 void BasicBlock::printSchedule(FILE* fptr)
 {
-	fprintf(fptr,";schedule start RecMii:%d, ResMii:%d, Mii:%d\n", recMII, resMII, mII);
-	finalSchedule->print(fptr);
+	fprintf(fptr,
+			";schedule start RecMii:%d, ResMii:%d, Mii:%d, Operation Schedule Size:%d\n",
+			recMII, resMII, mII, opScheduler->getScheduleSize());
+	if(moduloSchedulorUsed)
+	{
+		finalSchedule->print(fptr);
+	}
+	else
+	{
+		fprintf(fptr,";Operation Schedule is better\n");
+		opScheduler->print(fptr);
+	}
+
 	fprintf(fptr,";schedule ends\n");
 }

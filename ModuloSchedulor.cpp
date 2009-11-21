@@ -180,15 +180,12 @@ void ModuloSchedulor::print(FILE* fptr)
 
 void ModuloSchedulor::printInstruction(FILE* fptr, EpilogueProlog& table)
 {
-//	fprintf(stdout, "table size %d\n", table.size());
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
 		InstructionSched &sched = table[i];
-//		fprintf(stdout, "sched size %d\n", sched.size());
 		for (unsigned int j = 0; j < sched.size(); j++)
 		{
 			InstCycle &cycle = sched[j];
-//			fprintf(stdout,"cycle size %d\n", cycle.size());
 			for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 			{
 				if (iter != cycle.begin())

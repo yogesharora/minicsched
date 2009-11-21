@@ -14,19 +14,27 @@
 class OperationScheduler
 {
 	DDG& ddg;
-	int k;
-	int* latestUseTime;
-	int* completionTime;
+	unsigned int k;
+	unsigned int* latestUseTime;
+	unsigned int* completionTime;
+	char *blockLabel;
 	typedef std::list<DDGNode*> Cycle;
 	typedef Cycle::iterator CycleIter;
 	typedef std::vector<Cycle> Schedule;
 
+	Schedule opSched;
+	int getEarliestSchedulTime(int nodeDestReg, int nodeDestRegIndex,
+			DDGNode* instruction);
+	void scheduleInstruction(int nodeDestReg, int nodeDestRegIndex,
+			unsigned int t, DDGNode* instruction);
+	void scheduleBranchInstruction();
+
 public:
-	OperationScheduler(DDG& d, int kay);
+	OperationScheduler(DDG& d, int kay, char* blockLabel);
 	~OperationScheduler();
 
 	int schedule();
-
+	int getScheduleSize() { return opSched.size(); }
 	void print(FILE* fptr);
 };
 

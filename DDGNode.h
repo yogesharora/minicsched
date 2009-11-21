@@ -19,6 +19,7 @@ class DDGNode
 public:
 	typedef std::set<Register> RegisterSet;
 	typedef RegisterSet::iterator RegisterSetIter;
+	typedef RegisterSet::const_iterator RegisterSetConstIter;
 
 	struct Edge
 	{
@@ -48,13 +49,13 @@ public:
 
 	Register getDestReg() { return destReg;}
 
-	DDGNode::RegisterSet& getSrcRegisters() { return srcReg;}
+	const DDGNode::RegisterSet& getSrcRegisters() { return srcReg;}
 
 	int getNo() { return instructionNumber; }
 
 	const SuccessorList& getSuccessors() { return sucessors; }
 
-	const PredecessorList& getPredecessors() { return predecessors; };
+	const PredecessorList& getPredecessors() { return predecessors; }
 
 	inst_t getInstruction() { return instruction;}
 
@@ -63,6 +64,8 @@ public:
 	void addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration);
 
 	void addOutputDependency(DDGNode *dependent, int myIteration, int dependentIteration);
+
+	int getLatency() { return latency; }
 
 private:
 	inst_t instruction;
@@ -76,7 +79,7 @@ private:
 
 	DDGNode(DDGNode &);
 	void initRegisterInfo();
-	int getLatency();
+	int calcLatency();
 	void insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, int dependentIteration);
 	void printEdges();
 };

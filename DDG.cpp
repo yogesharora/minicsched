@@ -28,7 +28,7 @@ DDG::~DDG()
 	// delete all the DDGNodes
 	for (DDGNodeListIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-			delete *iter;
+		delete *iter;
 	}
 }
 

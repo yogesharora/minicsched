@@ -11,9 +11,10 @@
 #include "s3inst.h"
 #include "DDG.h"
 #include "DDGNode.h"
+#include "ModuloSchedulor.h"
+#include "OperationScheduler.h"
 #include <cstdio>
 #include <cstdlib>
-#include "ModuloSchedulor.h"
 #include <queue>
 #include <vector>
 #include <list>
@@ -29,7 +30,10 @@ private:
 	DDG ddg;
 	int noInstructions;
 	ModuloSchedulor *finalSchedule;
+	OperationScheduler *opScheduler;
 	char *blockLabel;
+	bool moduloSchedulorUsed;
+
 	void calculateMII(int k);
 
 
