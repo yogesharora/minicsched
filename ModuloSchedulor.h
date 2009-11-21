@@ -60,7 +60,7 @@ class ModuloSchedulor
 	InstructionSched prolog;
 	InstructionSched epilogue;
 	DDG& ddg;
-	char *label;
+	char *basicBlockLabel;
 
 	struct DDGComp
 	{
@@ -81,12 +81,13 @@ class ModuloSchedulor
 	bool resourceConflict(int curTime);
 	void schedule(DDGNode* op, int time);
 	void unschedule(int instruction);
-    void genProlog(int maxIteration);
-    void genEpilogue(int maxIteration, int branchIterationNo);
+    int genProlog(int maxIteration);
+    void genEpilogue(int maxIteration, int branchIterationNo, int maxLabel);
 
     void printMrt(FILE* fptr, Mrt& table);
-    void printInstruction(FILE* fptr, InstructionSched& table, bool printLabel=false, char *labelSuffix=NULL);
-    inst_t createNewBranchInst(inst_t ddgOnstruction, int i);
+    void printInstruction(FILE* fptr, InstructionSched& table);
+    inst_t createNewBranchInst(inst_t ddgInstruction, int i);
+    inst_t createEpilogueLabelInst(inst_t ddgInstruction, int i);
 
 public:
 	ModuloSchedulor(int del, int res, unsigned int inst, DDG& d, char* blockLabel);

@@ -10,7 +10,7 @@
 
 ModuloSchedulor::ModuloSchedulor(int del, int res, unsigned int inst, DDG& d,
 		char* blockLabel) :
-	delta(del), k(res), noOfInstructions(inst), mrt(del), ddg(d), label(
+	delta(del), k(res), noOfInstructions(inst), mrt(del), ddg(d), basicBlockLabel(
 			blockLabel)
 {
 	neverScheduled = new bool[noOfInstructions];
@@ -35,19 +35,20 @@ ModuloSchedulor::~ModuloSchedulor()
 	delete[] schedTime;
 }
 
-inst_t ModuloSchedulor::createNewBranchInst(inst_t ddgOnstruction, int i)
+inst_t ModuloSchedulor::createNewBranchInst(inst_t ddgInstruction, int label)
 {
     inst_t inst = new inst_d();
-    *inst = *ddgOnstruction;
+    *inst = *ddgInstruction;
     inst->ccode = ~inst->ccode;
-    inst->ops[1].label = new char[strlen(label) + 20];
-    sprintf(inst->ops[1].label, "%s_EE%d", label, i/delta);
+    inst->ops[1].label = new char[strlen(basicBlockLabel) + 20];
+    sprintf(inst->ops[1].label, "%s_EE%d", basicBlockLabel, label);
     return inst;
 }
 
-void ModuloSchedulor::genProlog(int maxIteration)
+int ModuloSchedulor::genProlog(int maxIteration)
 {
 	prolog.reserve(maxIteration * delta);
+	int maxLabel = 0;
 	for (int i = 0; i < maxIteration; i++)
 	{
 		for (int j = 0; j < delta; j++)
@@ -58,25 +59,33 @@ void ModuloSchedulor::genProlog(int maxIteration)
 			{
 				if (iter->iteration <= i)
 				{
-					inst_t ddgOnstruction = iter->ddgNode->getInstruction();
-					if(ddgOnstruction->op == OP_BR)
+					inst_t ddgInstruction = iter->ddgNode->getInstruction();
+					inst_t prologInst = ddgInstruction;
+					if(ddgInstruction->op == OP_BR)
 					{
-					    inst_t inst = createNewBranchInst(ddgOnstruction, i);
-						prolog[i*delta + j].push_back(PrologEpilogueSchedule(inst,
-								iter->iteration));
+						maxLabel = i/delta;
+						prologInst = createNewBranchInst(ddgInstruction, maxLabel);
 					}
-					else
-					{
-						prolog[i * delta + j].push_back(PrologEpilogueSchedule(
-								ddgOnstruction, iter->iteration));
-					}
+
+					prolog[i*delta + j].push_back(PrologEpilogueSchedule(prologInst,
+													iter->iteration));
 				}
 			}
 		}
 	}
+	return maxLabel;
 }
 
-void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo)
+inst_t ModuloSchedulor::createEpilogueLabelInst(inst_t ddgInstruction, int i)
+{
+	inst_t inst = new inst_d();
+	*inst = *ddgInstruction;
+	inst->label = new char[strlen(basicBlockLabel) + 20];
+	sprintf(inst->label, "%s_EE%d", basicBlockLabel, i);
+	return inst;
+}
+
+void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo, int maxLabel)
 {
 	int n = maxIteration - branchIterationNo;
 	epilogue.reserve(n * delta);
@@ -90,12 +99,16 @@ void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo)
 			{
 				if (iter->iteration > i)
 				{
-					inst_t ddgOnstruction = iter->ddgNode->getInstruction();
-					if(ddgOnstruction->op != OP_BR)
+					inst_t ddgInstruction = iter->ddgNode->getInstruction();
+					if(ddgInstruction->op != OP_BR)
 					{
-						epilogue[(i - branchIterationNo) * delta + j].push_back(
-								PrologEpilogueSchedule(ddgOnstruction,
-										iter->iteration));
+						int index = (i - branchIterationNo) * delta + j;
+						if(j==0 && epilogue[index].size()==0)
+						{
+							ddgInstruction = createEpilogueLabelInst(ddgInstruction, maxLabel--);
+						}
+						epilogue[index].push_back(PrologEpilogueSchedule(
+								ddgInstruction, iter->iteration));
 					}
 				}
 			}
@@ -112,8 +125,8 @@ void ModuloSchedulor::genPrologEpilogue()
 	}
 
 	int branchIterationNo = schedTime[noOfInstructions-1] / delta;
-    genProlog(maxIteration);
-    genEpilogue(maxIteration, branchIterationNo);
+    int maxLabel = genProlog(maxIteration);
+    genEpilogue(maxIteration, branchIterationNo, maxLabel);
 }
 
 void ModuloSchedulor::rotate()
@@ -156,32 +169,26 @@ void ModuloSchedulor::rotate()
 void ModuloSchedulor::print(FILE* fptr)
 {
 	fprintf(fptr,";prolog\n");
-	fprintf(fptr,"%s:", label);
+	fprintf(fptr,"%s:", basicBlockLabel);
 	printInstruction(fptr, prolog);
 	fprintf(fptr,";kernel\n");
 	printMrt(fptr, mrt);
 	fprintf(fptr,";epilogue\n");
-	printInstruction(fptr, epilogue, true, "_EE");
+	printInstruction(fptr, epilogue);
 }
 
-void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table,
-		bool printLabel, char *labelSuffix)
+void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table)
 {
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
 		InstCycle &cycle = table[i];
-		if(printLabel && i%delta==0)
-		{
-			fprintf(fptr,"%s%s%d:", label, labelSuffix,i/delta);
-		}
-
 		for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
 		{
 			if (iter != cycle.begin())
 				fprintf(fptr,".");
 
 			PrintUtils::printInstruction(fptr, (*iter).inst, true);
-			fprintf(fptr,"(%d)", iter->iteration);
+//			fprintf(fptr,"(%d)", iter->iteration);
 		}
 		if(cycle.size()>0)
 			fprintf(fptr,"\n");
@@ -192,7 +199,7 @@ void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table,
 
 void ModuloSchedulor::printMrt(FILE* fptr, Mrt& table)
 {
-	fprintf(fptr, "%s_K:", label);
+	fprintf(fptr, "%s_K:", basicBlockLabel);
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
 		Cycle &cycle = table[i];
@@ -204,7 +211,7 @@ void ModuloSchedulor::printMrt(FILE* fptr, Mrt& table)
 			PrintUtils::printInstruction(fptr, ddgNode->getInstruction(),
 					true, "_K");
 
-			fprintf(fptr,"(%d)", iter->iteration);
+//			fprintf(fptr,"(%d)", iter->iteration);
 		}
 		if(cycle.size()>0)
 			fprintf(fptr,"\n");
