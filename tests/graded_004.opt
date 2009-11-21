@@ -17,31 +17,15 @@ main:	ADD R6, R6, #-1
 	ADD R13, R12, #1
 	IN 
 	ADD R56, R0, #0
-;schedule start RecMii:7, ResMii:3, Mii:7
-;prolog
-L2:	NOP
-	NOP
-	NOP
-	NOP
-	ADD R50, R56, #1
+;schedule start RecMii:7, ResMii:3, Mii:7, Operation Schedule Size:7
+;Operation Schedule is better
+L2:	ADD R50, R56, #1
 	ADD R51, R50, #10.	SUB R63, R50, #100
-	ADD R52, R51, #2.	BRnz R63, L2_EE0
-;kernel
-L2_K:	SUB R53, R52, #3
+	ADD R52, R51, #2
+	SUB R53, R52, #3
 	ADD R54, R53, #5
 	SUB R55, R54, #1
-	ADD R56, R55, #2
-	ADD R50, R56, #1
-	ADD R51, R50, #10.	SUB R63, R50, #100
-	ADD R52, R51, #2.	BRp R63, L2_K
-;epilogue
-L2_EE0:	SUB R53, R52, #3
-	ADD R54, R53, #5
-	SUB R55, R54, #1
-	ADD R56, R55, #2
-	NOP
-	NOP
-	NOP
+	ADD R56, R55, #2.	BRp R63, L2
 ;schedule ends
 	SET R0, #0
 	ADD R0, R50, #0

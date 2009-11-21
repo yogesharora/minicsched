@@ -26,7 +26,7 @@ L4:	ADD R52, R50, #3
 	BRp R50, L3
 L5:	IN 
 	ADD R53, R0, #0
-;schedule start RecMii:5, ResMii:4, Mii:5
+;schedule start RecMii:5, ResMii:4, Mii:5, Operation Schedule Size:7
 ;prolog
 L2:	NOP
 	NOP

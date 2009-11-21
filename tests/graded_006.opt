@@ -26,28 +26,15 @@ L4:	ADD R52, R50, #3
 	BRnz R50, L3
 	IN 
 	ADD R56, R0, #0
-;schedule start RecMii:6, ResMii:3, Mii:6
-;prolog
-L2:	NOP
-	NOP
-	NOP
-	ADD R50, R56, #1.	STR R68, R45, #1
+;schedule start RecMii:6, ResMii:3, Mii:6, Operation Schedule Size:7
+;Operation Schedule is better
+L2:	ADD R50, R56, #1.	STR R68, R45, #1
 	ADD R51, R50, #10.	SUB R63, R50, #150
-	ADD R52, R51, #2.	BRnz R63, L2_EE0
-;kernel
-L2_K:	SUB R53, R52, #3
+	ADD R52, R51, #2
+	SUB R53, R52, #3
 	LDR R60, R53, #4.	ADD R54, R53, #5
 	ADD R56, R54, #2
-	ADD R50, R56, #1.	STR R68, R45, #1
-	ADD R51, R50, #10.	SUB R63, R50, #150
-	ADD R52, R51, #2.	BRp R63, L2_K
-;epilogue
-L2_EE0:	SUB R53, R52, #3
-	LDR R60, R53, #4.	ADD R54, R53, #5
-	ADD R56, R54, #2
-	NOP
-	NOP
-	NOP
+	BRp R63, L2
 ;schedule ends
 	SET R0, #0
 	ADD R0, R50, #0

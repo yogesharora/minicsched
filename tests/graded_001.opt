@@ -17,7 +17,7 @@ main:	ADD R6, R6, #-1
 	ADD R13, R12, #1
 	IN 
 	ADD R50, R0, #0
-;schedule start RecMii:5, ResMii:2, Mii:5
+;schedule start RecMii:5, ResMii:2, Mii:5, Operation Schedule Size:7
 ;prolog
 L2:	NOP
 	NOP
