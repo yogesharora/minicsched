@@ -55,10 +55,11 @@ class ModuloSchedulor
 	typedef std::list<PrologEpilogueSchedule> InstCycle;
 	typedef InstCycle::iterator InstCycleIter;
 	typedef std::vector<InstCycle> InstructionSched;
+	typedef std::vector<InstructionSched> EpilogueProlog;
 
 	Mrt mrt;
-	InstructionSched prolog;
-	InstructionSched epilogue;
+	EpilogueProlog prologs;
+	EpilogueProlog epilogues;
 	DDG& ddg;
 	char *basicBlockLabel;
 
@@ -81,11 +82,11 @@ class ModuloSchedulor
 	bool resourceConflict(int curTime);
 	void schedule(DDGNode* op, int time);
 	void unschedule(int instruction);
-    void genProlog(int maxIteration);
-    void genEpilogue(int maxIteration, int branchIterationNo);
+    int genProlog(int maxIteration);
+    void genEpilogue(int maxIteration, int branchIterationNo, int branches);
 
     void printMrt(FILE* fptr, Mrt& table);
-    void printInstruction(FILE* fptr, InstructionSched& table);
+    void printInstruction(FILE* fptr, EpilogueProlog& table);
     inst_t createNewBranchInst(inst_t ddgInstruction, int i);
     inst_t createEpilogueLabelInst(inst_t ddgInstruction, int i);
 

@@ -45,15 +45,18 @@ inst_t ModuloSchedulor::createNewBranchInst(inst_t ddgInstruction, int label)
     return inst;
 }
 
-void ModuloSchedulor::genProlog(int maxIteration)
+int ModuloSchedulor::genProlog(int maxIteration)
 {
-	prolog.reserve(maxIteration * delta);
+	int branchNo=0;
 	for (int i = 0; i < maxIteration; i++)
 	{
+		prologs.push_back(InstructionSched());
+		InstructionSched& prolog =  prologs[i];
 		for (int j = 0; j < delta; j++)
 		{
 			prolog.push_back(InstCycle());
-			Cycle & cycle = mrt[j];
+			Cycle& cycle = mrt[j];
+			InstCycle& prologCycle = prolog[j];
 			for (CycleIter iter = cycle.begin(); iter != cycle.end(); ++iter)
 			{
 				if (iter->iteration <= i)
@@ -62,15 +65,15 @@ void ModuloSchedulor::genProlog(int maxIteration)
 					inst_t prologInst = ddgInstruction;
 					if(ddgInstruction->op == OP_BR)
 					{
-						prologInst = createNewBranchInst(ddgInstruction, i/delta);
+						prologInst = createNewBranchInst(ddgInstruction, branchNo++);
 					}
-
-					prolog[i*delta + j].push_back(PrologEpilogueSchedule(prologInst,
-													iter->iteration));
+					prologCycle.push_back(PrologEpilogueSchedule(prologInst,
+							iter->iteration));
 				}
 			}
 		}
 	}
+	return branchNo;
 }
 
 inst_t ModuloSchedulor::createEpilogueLabelInst(inst_t ddgInstruction, int i)
@@ -82,29 +85,30 @@ inst_t ModuloSchedulor::createEpilogueLabelInst(inst_t ddgInstruction, int i)
 	return inst;
 }
 
-void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo)
+void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo, int branches)
 {
-	int n = (maxIteration - branchIterationNo)-1;
-	epilogue.reserve((maxIteration - branchIterationNo) * delta);
-	for (int i = branchIterationNo; i < maxIteration; i++, n--)
+	for (int k = 0, i = maxIteration; i > branchIterationNo; i--, k++)
 	{
+		epilogues.push_back(InstructionSched());
+		InstructionSched& epilogue =  epilogues[k];
 		for (int j = 0; j < delta; j++)
 		{
 			epilogue.push_back(InstCycle());
-			Cycle & cycle = mrt[j];
+			Cycle& cycle = mrt[j];
+			InstCycle& epilogueCycle = epilogue[j];
 			for (CycleIter iter = cycle.begin(); iter != cycle.end(); ++iter)
 			{
-				if (iter->iteration > maxIteration-i)
+				if (iter->iteration >= i)
 				{
 					inst_t ddgInstruction = iter->ddgNode->getInstruction();
-					if(ddgInstruction->op != OP_BR)
+					if (ddgInstruction->op != OP_BR)
 					{
-						int index = (i - branchIterationNo) * delta + j;
-						if(j==0 && epilogue[index].size()==0)
+						if(j==0 && epilogueCycle.size()==0)
 						{
-							ddgInstruction = createEpilogueLabelInst(ddgInstruction, n);
+							ddgInstruction = createEpilogueLabelInst(
+									ddgInstruction, --branches);
 						}
-						epilogue[index].push_back(PrologEpilogueSchedule(
+						epilogueCycle.push_back(PrologEpilogueSchedule(
 								ddgInstruction, iter->iteration));
 					}
 				}
@@ -122,8 +126,8 @@ void ModuloSchedulor::genPrologEpilogue()
 	}
 
 	int branchIterationNo = schedTime[noOfInstructions-1] / delta;
-    genProlog(maxIteration);
-    genEpilogue(maxIteration, branchIterationNo);
+    int branches = genProlog(maxIteration);
+    genEpilogue(maxIteration, branchIterationNo, branches);
 }
 
 void ModuloSchedulor::rotate()
@@ -167,30 +171,37 @@ void ModuloSchedulor::print(FILE* fptr)
 {
 	fprintf(fptr,";prolog\n");
 	fprintf(fptr,"%s:", basicBlockLabel);
-	printInstruction(fptr, prolog);
+	printInstruction(fptr, prologs);
 	fprintf(fptr,";kernel\n");
 	printMrt(fptr, mrt);
 	fprintf(fptr,";epilogue\n");
-	printInstruction(fptr, epilogue);
+	printInstruction(fptr, epilogues);
 }
 
-void ModuloSchedulor::printInstruction(FILE* fptr, InstructionSched& table)
+void ModuloSchedulor::printInstruction(FILE* fptr, EpilogueProlog& table)
 {
+//	fprintf(stdout, "table size %d\n", table.size());
 	for (unsigned int i = 0; i < table.size(); i++)
 	{
-		InstCycle &cycle = table[i];
-		for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
+		InstructionSched &sched = table[i];
+//		fprintf(stdout, "sched size %d\n", sched.size());
+		for (unsigned int j = 0; j < sched.size(); j++)
 		{
-			if (iter != cycle.begin())
-				fprintf(fptr,".");
+			InstCycle &cycle = sched[j];
+//			fprintf(stdout,"cycle size %d\n", cycle.size());
+			for (InstCycleIter iter = cycle.begin(); iter != cycle.end(); iter++)
+			{
+				if (iter != cycle.begin())
+					fprintf(fptr, ".");
 
-			PrintUtils::printInstruction(fptr, (*iter).inst, true);
-//			fprintf(fptr,"(%d)", iter->iteration);
+				PrintUtils::printInstruction(fptr, (*iter).inst, true);
+//				fprintf(fptr, "(%d)", iter->iteration);
+			}
+			if (cycle.size() > 0)
+				fprintf(fptr, "\n");
+			else
+				fprintf(fptr, "\tNOP\n");
 		}
-		if(cycle.size()>0)
-			fprintf(fptr,"\n");
-		else
-			fprintf(fptr,"\tNOP\n");
 	}
 }
 

@@ -23,6 +23,10 @@ public:
 	int getMaxCycleLength();
 	int getNoInstructions() { return noOfInstructions;}
 	const DDGNodeList& getInstructions() { return graph; }
+	int getNoRegisters() { return noOfRegisters; }
+	Register getMaxRegister() { return maxReg;}
+	Register getMinRegister() { return minReg;}
+
 	virtual ~DDG();
 
 private:
