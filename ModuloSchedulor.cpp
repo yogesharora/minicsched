@@ -45,7 +45,7 @@ inst_t ModuloSchedulor::createNewBranchInst(inst_t ddgInstruction, int label)
     return inst;
 }
 
-int ModuloSchedulor::genProlog(int maxIteration)
+void ModuloSchedulor::genProlog(int maxIteration)
 {
 	int branchNo=0;
 	for (int i = 0; i < maxIteration; i++)
@@ -73,7 +73,6 @@ int ModuloSchedulor::genProlog(int maxIteration)
 			}
 		}
 	}
-	return branchNo;
 }
 
 inst_t ModuloSchedulor::createEpilogueLabelInst(inst_t ddgInstruction, int i)
@@ -85,9 +84,10 @@ inst_t ModuloSchedulor::createEpilogueLabelInst(inst_t ddgInstruction, int i)
 	return inst;
 }
 
-void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo, int branches)
+void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo)
 {
-	for (int k = 0, i = maxIteration; i > branchIterationNo; i--, k++)
+	int b=0;
+	for (int k = 0, i = branchIterationNo+1; i <= maxIteration ; i++, k++)
 	{
 		epilogues.push_back(InstructionSched());
 		InstructionSched& epilogue =  epilogues[k];
@@ -106,7 +106,7 @@ void ModuloSchedulor::genEpilogue(int maxIteration, int branchIterationNo, int b
 						if(j==0 && epilogueCycle.size()==0)
 						{
 							ddgInstruction = createEpilogueLabelInst(
-									ddgInstruction, --branches);
+									ddgInstruction, b++);
 						}
 						epilogueCycle.push_back(PrologEpilogueSchedule(
 								ddgInstruction, iter->iteration));
@@ -126,8 +126,8 @@ void ModuloSchedulor::genPrologEpilogue()
 	}
 
 	int branchIterationNo = schedTime[noOfInstructions-1] / delta;
-    int branches = genProlog(maxIteration);
-    genEpilogue(maxIteration, branchIterationNo, branches);
+    genProlog(maxIteration);
+    genEpilogue(maxIteration, branchIterationNo);
 }
 
 void ModuloSchedulor::rotate()
