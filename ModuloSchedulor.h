@@ -81,8 +81,8 @@ class ModuloSchedulor
 	bool resourceConflict(int curTime);
 	void schedule(DDGNode* op, int time);
 	void unschedule(int instruction);
-    int genProlog(int maxIteration);
-    void genEpilogue(int maxIteration, int branchIterationNo, int maxLabel);
+    void genProlog(int maxIteration);
+    void genEpilogue(int maxIteration, int branchIterationNo);
 
     void printMrt(FILE* fptr, Mrt& table);
     void printInstruction(FILE* fptr, InstructionSched& table);
