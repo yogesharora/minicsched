@@ -68,6 +68,9 @@ public:
 	int getLatency() { return latency; }
 
 	void setDepth(int d) { depth=d;};
+
+	int getDepth() {  return depth; }
+
 private:
 	inst_t instruction;
 	int instructionNumber;
