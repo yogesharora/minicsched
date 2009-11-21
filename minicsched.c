@@ -68,6 +68,8 @@ void c_optimize()
 	S3Code s3Code(instList);
 	s3Code.findBasicBlocks();
 	const S3Code::BasicBlockList& basicBlockList = s3Code.getBasicBlocks();
+	if(k==0)
+		k=DEFAULT_K_VALUE;
 	for(S3Code::BasicBlockConstIter iter=basicBlockList.begin();
 			iter != basicBlockList.end();
 			iter++)

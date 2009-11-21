@@ -13,5 +13,6 @@
 #define R0 0
 #define INVALID_SCHEDULE_TIME -1
 typedef int Register;
+#define DEFAULT_K_VALUE 4
 
 #endif /* GLOBALS_H_ */
