@@ -7,9 +7,9 @@ OBJS :=  s3.lex.o s3.y.o minicsched.o \
 		ModuloSchedulor.o PrintUtils.o OperationScheduler.o \
 		DDGHeightHeuristic.o
 
-all: sched
+all: mcc
 
-sched: $(OBJS) cmdline.o
+mcc: $(OBJS) cmdline.o
 	$(LD) -o $@ $(LDFLAGS) $(LIBS) $^ 
 
 cmdline.c:
@@ -22,8 +22,8 @@ clean:
 	-rm -Rf $(OBJS) cmdline.o cmdline.c
 	-rm -f *.y.h *.y.output
 	-rm -f *.y.c *.lex.c
-	-rm -f sched
-	-rm -f sched.exe
+	-rm -f mcc
+	-rm -f mcc.exe
 	-rm -f *~
 	-rm -f ./tests/minic.verbose.txt
 
