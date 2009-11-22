@@ -29,10 +29,10 @@ L2:	NOP
 ;kernel
 L2_K:	ADD R52, R51, #2
 	SUB R53, R52, #3
-	LDR R60, R53, #4.	ADD R54, R53, #5
+	ADD R54, R53, #5.	LDR R60, R53, #4
 	SUB R55, R54, #1
 	ADD R56, R55, #2
-	ADD R50, R56, #1.	STR R68, R45, #1.	SUB R63, R56, #30
+	ADD R50, R56, #1.	SUB R63, R56, #30.	STR R68, R45, #1
 	ADD R51, R50, #10.	BRp R63, L2_K
 ;epilogue
 ;schedule ends
