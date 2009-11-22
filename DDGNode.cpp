@@ -10,7 +10,7 @@
 
 DDGNode::DDGNode(inst_t instruction, int no) :
 	instruction(instruction), instructionNumber(no), destReg(INVALID_REG),
-	rootNode(true), latency(calcLatency())
+	rootNode(true), latency(calcLatency()), height(latency)
 {
 	initRegisterInfo();
 }
@@ -119,41 +119,28 @@ void DDGNode::initRegisterInfo()
 
 void DDGNode::addFlowDependency(DDGNode *dependent, int myIteration, int dependentIteration)
 {
-	insertEdge(dependent, latency, myIteration, dependentIteration);
+	insertEdge(dependent, latency, myIteration, dependentIteration, TRUE_DEP);
 	printEdges();
 }
 
 void DDGNode::addAntiDependency(DDGNode *dependent, int myIteration, int dependentIteration)
 {
-	insertEdge(dependent, 0, myIteration, dependentIteration);
+	insertEdge(dependent, 0, myIteration, dependentIteration, ANTI_DEP);
 	printEdges();
 }
 
 void DDGNode::addOutputDependency(DDGNode *dependent, int myIteration, int dependentIteration)
 {
-	insertEdge(dependent, latency, myIteration, dependentIteration);
+	insertEdge(dependent, latency, myIteration, dependentIteration, OUT_DEP);
 	printEdges();
 }
 
-void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, int dependentIteration)
+void DDGNode::insertEdge(DDGNode* dependent, int edgeWeight, int myIteration,
+		int dependentIteration, EdgeType type)
 {
-//	for(SuccessorListIter iter = sucessors.begin(); iter!=sucessors.end();iter++)
-//	{
-//		Edge &edge = *iter;
-//		if (edge.node->getNo() == node->getNo())
-//		{
-//			// edge to same node exits
-//			// if the weight is more...add that edge else no need
-//			if(edge.myIteration < edgeWeight)
-//			{
-//				edge.edgeWeight=edgeWeight;
-//			}
-//			return;
-//		}
-//	}
-	sucessors.push_back(Edge(dependent, edgeWeight, myIteration, dependentIteration));
+	sucessors.push_back(Edge(dependent, edgeWeight, myIteration, dependentIteration, type));
 	dependent->predecessors.push_back(Edge(this, edgeWeight, myIteration,
-			dependentIteration));
+			dependentIteration, type));
 }
 
 void DDGNode::printEdges()

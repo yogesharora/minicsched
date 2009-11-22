@@ -13,6 +13,7 @@
 #include "DDGNode.h"
 #include "ModuloSchedulor.h"
 #include "OperationScheduler.h"
+#include "DDGHeightHeuristic.h"
 #include <cstdio>
 #include <cstdlib>
 #include <queue>
@@ -33,6 +34,7 @@ private:
 	OperationScheduler *opScheduler;
 	char *blockLabel;
 	bool moduloSchedulorUsed;
+	DDGHeightHeuristic heightHeuristic;
 
 	void calculateMII(int k);
 

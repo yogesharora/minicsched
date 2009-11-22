@@ -26,6 +26,7 @@ public:
 	int getNoRegisters() { return noOfRegisters; }
 	Register getMaxRegister() { return maxReg;}
 	Register getMinRegister() { return minReg;}
+	void createDDGForAnotherIteration();
 
 	virtual ~DDG();
 
@@ -116,10 +117,10 @@ private:
 	DDGNodeList graph;
 	DDGNodeWithIteration* defInst;
 	DDGNodeSet* useInst;
+	int iterations;
 
 	void initProgramInfo();
 	void calcMaxMinRegisters(inst_t instruction);
-	void createDDG();
 	void checkCycles(DDGNode* graphRoot, DDGNode* node, TraversalInfoArray infoArray);
 
 	DDG(DDG&);

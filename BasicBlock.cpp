@@ -14,7 +14,7 @@ using namespace std;
 
 BasicBlock::BasicBlock(inst_t s, inst_t e) :
 	start(s), end(e), ddg(start, end), finalSchedule(NULL),
-	opScheduler(NULL), moduloSchedulorUsed(true)
+	opScheduler(NULL), moduloSchedulorUsed(true), heightHeuristic(ddg)
 {
 	// remove the label of the block
 	// and store it
@@ -30,6 +30,9 @@ BasicBlock::~BasicBlock()
 
 void BasicBlock::scheduleBlock(int k)
 {
+	ddg.createDDGForAnotherIteration();
+	heightHeuristic.calculateHeightheuristic();
+	ddg.createDDGForAnotherIteration();
 	calculateMII(k);
 	int delta = mII;
 	opScheduler = new OperationScheduler(ddg, k, blockLabel);

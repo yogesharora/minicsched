@@ -67,7 +67,8 @@ class ModuloSchedulor
 	{
 		bool operator () (DDGNode* a, DDGNode* b)
 		{
-			return a->getDepth() > b->getDepth();
+			return (a->getHeight() - a->getDepth()) >
+				(b->getHeight() - b->getDepth());
 		}
 	};
 

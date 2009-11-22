@@ -21,18 +21,26 @@ public:
 	typedef RegisterSet::iterator RegisterSetIter;
 	typedef RegisterSet::const_iterator RegisterSetConstIter;
 
+	enum EdgeType
+	{
+		TRUE_DEP,
+		ANTI_DEP,
+		OUT_DEP
+	};
+
 	struct Edge
 	{
 		DDGNode* node;
 		int edgeWeight;
 		int iterationDistance;
-		int dependentIteration;
+		EdgeType edgeType;
 
-		Edge(DDGNode* d, int e, int mi, int di)
+		Edge(DDGNode* d, int e, int mi, int di, EdgeType et)
 		{
 			node = d;
 			edgeWeight = e;
 			iterationDistance = di - mi;
+			edgeType = et;
 		}
 	};
 
@@ -71,6 +79,10 @@ public:
 
 	int getDepth() {  return depth; }
 
+	void setHeight(int h) { height=h;};
+
+	int getHeight() {  return height; }
+
 private:
 	inst_t instruction;
 	int instructionNumber;
@@ -81,11 +93,13 @@ private:
 	PredecessorList predecessors;
 	int latency;
 	int depth;
+	int height;
 
 	DDGNode(DDGNode &);
 	void initRegisterInfo();
 	int calcLatency();
-	void insertEdge(DDGNode* dependent, int edgeWeight, int myIteration, int dependentIteration);
+	void insertEdge(DDGNode* dependent, int edgeWeight, int myIteration,
+			int dependentIteration, EdgeType type);
 	void printEdges();
 };
 
